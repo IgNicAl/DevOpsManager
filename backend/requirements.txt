@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+psutil
+docker
+httpx
+python-multipart
+pydantic
+pytest
+pytest-asyncio

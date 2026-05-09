@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+/* ============================================
+   DevOps Manager — Design System
+   Material Design 3 Dark Theme (Green Primary)
+   Extracted from Stitch screens
+   ============================================ */
+
+@theme {
+  /* Primary */
+  --color-primary: #5bf06c;
+  --color-primary-container: #39d353;
+  --color-primary-fixed: #6fff7b;
+  --color-primary-fixed-dim: #4be260;
+  --color-on-primary: #00390c;
+  --color-on-primary-container: #005517;
+  --color-on-primary-fixed: #002205;
+  --color-on-primary-fixed-variant: #005316;
+  --color-inverse-primary: #006e20;
+
+  /* Secondary */
+  --color-secondary: #c2c7d0;
+  --color-secondary-container: #42474f;
+  --color-secondary-fixed: #dee2ec;
+  --color-secondary-fixed-dim: #c2c7d0;
+  --color-on-secondary: #2c3138;
+  --color-on-secondary-container: #b1b5be;
+  --color-on-secondary-fixed: #171c23;
+  --color-on-secondary-fixed-variant: #42474f;
+
+  /* Tertiary (Warning/Orange) */
+  --color-tertiary: #ffc7c0;
+  --color-tertiary-container: #ff9f94;
+  --color-tertiary-fixed: #ffdad6;
+  --color-tertiary-fixed-dim: #ffb4ab;
+  --color-on-tertiary: #591b17;
+  --color-on-tertiary-container: #79332d;
+  --color-on-tertiary-fixed: #3d0605;
+  --color-on-tertiary-fixed-variant: #76312b;
+
+  /* Error */
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  /* Surface system */
+  --color-surface: #0e150d;
+  --color-surface-dim: #0e150d;
+  --color-surface-bright: #333b31;
+  --color-surface-container-lowest: #081008;
+  --color-surface-container-low: #161e15;
+  --color-surface-container: #1a2218;
+  --color-surface-container-high: #242c22;
+  --color-surface-container-highest: #2f372d;
+  --color-surface-variant: #2f372d;
+  --color-surface-tint: #4be260;
+
+  /* On Surface */
+  --color-on-surface: #dce5d6;
+  --color-on-surface-variant: #bccbb6;
+  --color-on-background: #dce5d6;
+  --color-background: #0e150d;
+  --color-inverse-surface: #dce5d6;
+  --color-inverse-on-surface: #2a3329;
+
+  /* Outline */
+  --color-outline: #869582;
+  --color-outline-variant: #3d4a3b;
+
+  /* Custom app colors */
+  --color-card: #161b22;
+  --color-card-border: #30363d;
+  --color-track: #21262d;
+
+  /* Spacing */
+  --spacing-margin: 24px;
+  --spacing-gutter: 16px;
+
+  /* Font families */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+/* Base layer */
+body {
+  background-color: #0d1117;
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography utilities */
+.text-headline-lg {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+.text-headline-md {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+.text-data-lg {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 500;
+}
+.text-data-md {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.text-label-xs {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.text-body-md {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+/* Data display — big numbers */
+.data-display {
+  font-family: var(--font-mono);
+  font-size: 48px;
+  line-height: 1;
+  font-weight: 500;
+}
+
+/* Surface card */
+.surface-card {
+  background-color: var(--color-card);
+}
+
+/* Progress track */
+.progress-track {
+  background-color: var(--color-track);
+  height: 4px;
+}
+
+/* Neon glows */
+.neon-glow-active {
+  box-shadow: 0 0 8px var(--color-primary);
+}
+.neon-glow-error {
+  box-shadow: 0 0 8px var(--color-error);
+}
+
+/* Table row borders */
+.table-row-border {
+  border-color: var(--color-card-border);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-container-lowest);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-variant);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline-variant);
+}
+
+/* Terminal focus */
+.terminal-focus:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+/* Pulse animations */
+@keyframes pulse-green {
+  0%,
+  100% {
+    box-shadow: 0 0 0px var(--color-primary);
+  }
+  50% {
+    box-shadow: 0 0 12px var(--color-primary);
+  }
+}
+@keyframes pulse-red {
+  0%,
+  100% {
+    box-shadow: 0 0 0px var(--color-error);
+  }
+  50% {
+    box-shadow: 0 0 12px var(--color-error);
+  }
+}
+
+.pulse-active {
+  animation: pulse-green 2s infinite;
+}
+.pulse-error {
+  animation: pulse-red 2s infinite;
+}

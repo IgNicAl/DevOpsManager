@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOps Manager - Storage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#39d353",
+                    "outline-variant": "#3d4a3b",
+                    "on-error": "#690005",
+                    "surface-container-lowest": "#081008",
+                    "on-tertiary-fixed": "#3d0605",
+                    "on-background": "#dce5d6",
+                    "on-secondary-fixed-variant": "#42474f",
+                    "surface-variant": "#2f372d",
+                    "surface-bright": "#333b31",
+                    "on-secondary": "#2c3138",
+                    "on-primary-container": "#005517",
+                    "primary-fixed": "#6fff7b",
+                    "inverse-on-surface": "#2a3329",
+                    "on-secondary-fixed": "#171c23",
+                    "inverse-surface": "#dce5d6",
+                    "secondary-fixed": "#dee2ec",
+                    "surface-container-low": "#161e15",
+                    "tertiary-fixed-dim": "#ffb4ab",
+                    "tertiary-fixed": "#ffdad6",
+                    "tertiary-container": "#ff9f94",
+                    "surface-container-high": "#242c22",
+                    "on-surface-variant": "#bccbb6",
+                    "surface-tint": "#4be260",
+                    "on-primary": "#00390c",
+                    "primary": "#5bf06c",
+                    "error": "#ffb4ab",
+                    "surface-container-highest": "#2f372d",
+                    "surface-container": "#1a2218",
+                    "tertiary": "#ffc7c0",
+                    "secondary": "#c2c7d0",
+                    "on-tertiary-fixed-variant": "#76312b",
+                    "on-primary-fixed": "#002205",
+                    "on-surface": "#dce5d6",
+                    "on-tertiary-container": "#79332d",
+                    "inverse-primary": "#006e20",
+                    "primary-fixed-dim": "#4be260",
+                    "on-tertiary": "#591b17",
+                    "on-primary-fixed-variant": "#005316",
+                    "surface": "#0e150d",
+                    "secondary-fixed-dim": "#c2c7d0",
+                    "secondary-container": "#42474f",
+                    "on-secondary-container": "#b1b5be",
+                    "surface-dim": "#0e150d",
+                    "error-container": "#93000a",
+                    "on-error-container": "#ffdad6",
+                    "background": "#0e150d",
+                    "outline": "#869582"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "container-max": "1440px",
+                    "margin": "24px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "data-lg": [
+                            "JetBrains Mono"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "label-xs": [
+                            "JetBrains Mono"
+                    ],
+                    "data-md": [
+                            "JetBrains Mono"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "data-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "24px",
+                                    "letterSpacing": "0em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-xs": [
+                            "11px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "data-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0em",
+                                    "fontWeight": "500"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .glow-red { box-shadow: 0 0 8px theme('colors.error'); }
+        .glow-green { box-shadow: 0 0 8px theme('colors.primary'); }
+        .glow-amber { box-shadow: 0 0 8px #f59e0b; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md h-screen overflow-hidden flex flex-col md:flex-row">
+<!-- TopAppBar (Mobile) / Visible md:hidden -->
+<header class="md:hidden flex justify-between items-center w-full px-margin h-16 bg-surface border-b border-outline-variant docked full-width top-0 z-50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+<span class="font-headline-md text-headline-md font-bold text-on-surface uppercase tracking-wider">DevOps Manager</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-data-md text-data-md text-on-surface-variant">node-01.prod.cluster</span>
+<span class="material-symbols-outlined text-primary cursor-pointer active:opacity-80 transition-all hover:bg-surface-container-highest" data-icon="settings">settings</span>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-full py-4 bg-surface-container text-primary-container font-data-md text-data-md border-r border-outline-variant fixed left-0 top-0 h-screen w-[240px] z-40 transition-all duration-200 ease-in-out">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary font-bold">CE</div>
+<div>
+<div class="font-headline-sm text-headline-sm font-black text-primary">Core Engine</div>
+<div class="font-label-xs text-label-xs text-on-surface-variant">v2.4.1-stable</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto space-y-1">
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span> Overview
+            </a>
+<a class="border-l-2 border-primary-container bg-surface-container-high text-primary flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="storage">storage</span> Storage
+            </a>
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings_input_component">settings_input_component</span> Services
+            </a>
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="hub">hub</span> Kubernetes
+            </a>
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="sync">sync</span> GitOps
+            </a>
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="backup">backup</span> Backups
+            </a>
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="lan">lan</span> Network
+            </a>
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="security">security</span> Security
+            </a>
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="terminal">terminal</span> Logs
+            </a>
+</div>
+<div class="mt-auto space-y-1 pt-4 border-t border-outline-variant">
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="help">help</span> Documentation
+            </a>
+<a class="border-l-2 border-transparent text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="contact_support">contact_support</span> Support
+            </a>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-1 md:ml-[240px] flex flex-col h-screen overflow-hidden bg-background">
+<!-- TopAppBar (Desktop) / Visible md:flex -->
+<header class="hidden md:flex justify-between items-center w-full px-margin h-16 bg-surface border-b border-outline-variant docked full-width top-0 z-30">
+<div class="font-headline-md text-headline-md font-bold text-on-surface uppercase tracking-wider">DevOps Manager</div>
+<div class="flex items-center bg-surface-container-high rounded px-3 py-1.5 w-64 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none text-data-md font-data-md text-on-surface focus:ring-0 p-0 w-full placeholder-on-surface-variant" placeholder="Search resources..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-data-md text-data-md text-on-surface-variant">node-01.prod.cluster</span>
+<div class="flex gap-2">
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-highest p-2 rounded transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-highest p-2 rounded transition-colors cursor-pointer active:opacity-80 relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error glow-red"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-highest p-2 rounded transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 overflow-y-auto p-margin space-y-6">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Storage Management</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Monitor ZFS pools and Kubernetes persistent volumes.</p>
+</div>
+<!-- Tabs -->
+<div class="flex bg-surface-container-high rounded p-1 border border-outline-variant">
+<button class="px-4 py-1.5 rounded bg-surface border border-outline-variant text-primary font-data-md text-data-md shadow-sm">ZFS Pools</button>
+<button class="px-4 py-1.5 rounded text-on-surface-variant hover:text-on-surface font-data-md text-data-md transition-colors">Kubernetes Volumes</button>
+</div>
+</div>
+<!-- Global Alert -->
+<div class="bg-error-container/20 border border-error text-error px-4 py-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<span class="font-data-md text-data-md font-bold">Warning: pool 'tank' is DEGRADED. Check disk health immediately.</span>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+<!-- Card: ZFS Pool (Degraded) -->
+<div class="bg-[#161b22] border-l-4 border-l-error border border-outline-variant rounded flex flex-col relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<div class="px-2 py-0.5 border border-error text-error rounded font-label-xs text-label-xs glow-red inline-flex items-center gap-1 bg-error-container/10">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> DEGRADED
+                        </div>
+</div>
+<div class="p-6 border-b border-[#30363d]">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4">pool: tank</h2>
+<div class="grid grid-cols-3 gap-4 mb-6">
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1 uppercase">Capacity</div>
+<div class="font-data-lg text-data-lg text-on-surface">42.5 TB</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1 uppercase">Allocated</div>
+<div class="font-data-lg text-data-lg text-on-surface">38.2 TB</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1 uppercase">Free</div>
+<div class="font-data-lg text-data-lg text-error">4.3 TB</div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between font-label-xs text-label-xs text-on-surface-variant">
+<span>Usage (89.8%)</span>
+</div>
+<div class="h-1 w-full bg-[#21262d] rounded-full overflow-hidden flex">
+<div class="bg-primary h-full" style="width: 70%"></div>
+<div class="bg-[#f59e0b] h-full" style="width: 19.8%"></div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest flex-1">
+<button class="flex items-center text-on-surface-variant hover:text-on-surface font-label-xs text-label-xs uppercase tracking-wider w-full text-left mb-2">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="expand_more">expand_more</span>
+                            vdevs / disks
+                        </button>
+<div class="font-data-md text-data-md text-on-surface-variant space-y-1 pl-6">
+<div class="flex justify-between items-center py-1">
+<span>raidz2-0</span>
+<span class="text-error">DEGRADED</span>
+</div>
+<div class="flex justify-between items-center py-1 pl-4 border-l border-[#30363d] ml-2">
+<span>sda (WDC_WD140EFFX)</span>
+<span class="text-primary">ONLINE</span>
+</div>
+<div class="flex justify-between items-center py-1 pl-4 border-l border-[#30363d] ml-2 bg-error-container/10">
+<span class="text-error">sdb (WDC_WD140EFFX)</span>
+<span class="text-error">UNAVAIL</span>
+</div>
+<div class="flex justify-between items-center py-1 pl-4 border-l border-[#30363d] ml-2">
+<span>sdc (WDC_WD140EFFX)</span>
+<span class="text-primary">ONLINE</span>
+</div>
+<div class="flex justify-between items-center py-1 pl-4 border-l border-[#30363d] ml-2">
+<span>sdd (WDC_WD140EFFX)</span>
+<span class="text-primary">ONLINE</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card: ZFS Pool (Healthy) -->
+<div class="bg-[#161b22] border-l-4 border-l-primary border border-outline-variant rounded flex flex-col relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<div class="px-2 py-0.5 border border-primary text-primary rounded font-label-xs text-label-xs glow-green inline-flex items-center gap-1 bg-primary/10">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> ONLINE
+                        </div>
+</div>
+<div class="p-6 border-b border-[#30363d]">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4">pool: ssd-fast</h2>
+<div class="grid grid-cols-3 gap-4 mb-6">
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1 uppercase">Capacity</div>
+<div class="font-data-lg text-data-lg text-on-surface">3.8 TB</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1 uppercase">Allocated</div>
+<div class="font-data-lg text-data-lg text-on-surface">1.2 TB</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1 uppercase">Free</div>
+<div class="font-data-lg text-data-lg text-on-surface">2.6 TB</div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between font-label-xs text-label-xs text-on-surface-variant">
+<span>Usage (31.5%)</span>
+</div>
+<div class="h-1 w-full bg-[#21262d] rounded-full overflow-hidden flex">
+<div class="bg-primary h-full" style="width: 31.5%"></div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest flex-1">
+<button class="flex items-center text-on-surface-variant hover:text-on-surface font-label-xs text-label-xs uppercase tracking-wider w-full text-left mb-2">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="chevron_right">chevron_right</span>
+                            vdevs / disks
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

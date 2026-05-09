@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GitOps - DevOps Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#39d353",
+                        "outline-variant": "#3d4a3b",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#081008",
+                        "on-tertiary-fixed": "#3d0605",
+                        "on-background": "#dce5d6",
+                        "on-secondary-fixed-variant": "#42474f",
+                        "surface-variant": "#2f372d",
+                        "surface-bright": "#333b31",
+                        "on-secondary": "#2c3138",
+                        "on-primary-container": "#005517",
+                        "primary-fixed": "#6fff7b",
+                        "inverse-on-surface": "#2a3329",
+                        "on-secondary-fixed": "#171c23",
+                        "inverse-surface": "#dce5d6",
+                        "secondary-fixed": "#dee2ec",
+                        "surface-container-low": "#161e15",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "tertiary-fixed": "#ffdad6",
+                        "tertiary-container": "#ff9f94",
+                        "surface-container-high": "#242c22",
+                        "on-surface-variant": "#bccbb6",
+                        "surface-tint": "#4be260",
+                        "on-primary": "#00390c",
+                        "primary": "#5bf06c",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#2f372d",
+                        "surface-container": "#1a2218",
+                        "tertiary": "#ffc7c0",
+                        "secondary": "#c2c7d0",
+                        "on-tertiary-fixed-variant": "#76312b",
+                        "on-primary-fixed": "#002205",
+                        "on-surface": "#dce5d6",
+                        "on-tertiary-container": "#79332d",
+                        "inverse-primary": "#006e20",
+                        "primary-fixed-dim": "#4be260",
+                        "on-tertiary": "#591b17",
+                        "on-primary-fixed-variant": "#005316",
+                        "surface": "#0e150d",
+                        "secondary-fixed-dim": "#c2c7d0",
+                        "secondary-container": "#42474f",
+                        "on-secondary-container": "#b1b5be",
+                        "surface-dim": "#0e150d",
+                        "error-container": "#93000a",
+                        "on-error-container": "#ffdad6",
+                        "background": "#0e150d",
+                        "outline": "#869582"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-max": "1440px",
+                        "margin": "24px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-lg": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "label-xs": ["JetBrains Mono"],
+                        "data-md": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "data-lg": ["18px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "label-xs": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "data-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface h-screen overflow-hidden flex font-body-md text-body-md">
+<!-- SideNavBar -->
+<nav class="bg-surface-container dark:bg-surface-container fixed left-0 top-0 h-screen w-[240px] border-r border-outline-variant dark:border-outline-variant flex flex-col h-full py-4 z-40 hidden md:flex">
+<div class="px-6 mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<div>
+<div class="font-headline-sm text-headline-sm font-black text-primary dark:text-primary leading-tight">Core Engine</div>
+<div class="font-label-xs text-label-xs text-on-surface-variant">v2.4.1-stable</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-1">
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">dashboard</span>
+                        Overview
+                    </a>
+</li>
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">storage</span>
+                        Storage
+                    </a>
+</li>
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">settings_input_component</span>
+                        Services
+                    </a>
+</li>
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">hub</span>
+                        Kubernetes
+                    </a>
+</li>
+<li>
+<a class="border-l-2 border-primary-container bg-surface-container-high text-primary dark:text-primary flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">sync</span>
+                        GitOps
+                    </a>
+</li>
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">backup</span>
+                        Backups
+                    </a>
+</li>
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">lan</span>
+                        Network
+                    </a>
+</li>
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">security</span>
+                        Security
+                    </a>
+</li>
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">terminal</span>
+                        Logs
+                    </a>
+</li>
+</ul>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<ul class="space-y-1">
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">help</span>
+                        Documentation
+                    </a>
+</li>
+<li>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out font-data-md text-data-md dark:text-on-surface-variant" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">contact_support</span>
+                        Support
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-[240px] min-w-0 h-screen overflow-hidden">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 z-50 flex justify-between items-center w-full px-margin h-16 bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant shrink-0">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface uppercase tracking-wider hidden md:block">DevOps Manager</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-surface-container px-3 py-1.5 rounded border border-outline-variant font-data-md text-data-md text-primary">
+<span class="material-symbols-outlined text-[18px] mr-2">lan</span>
+                    node-01.prod.cluster
+                </div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors rounded cursor-pointer active:opacity-80 transition-all">
+<span class="material-symbols-outlined">monitoring</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors rounded cursor-pointer active:opacity-80 transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" style="box-shadow: 0 0 8px theme('colors.primary')"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors rounded cursor-pointer active:opacity-80 transition-all">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="w-8 h-8 rounded bg-surface-container-highest border border-outline-variant overflow-hidden flex items-center justify-center">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="A small square profile picture of a female system administrator with short hair and glasses, set against a dark grey background. High-contrast terminal aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC30om1Gjiero7rn8SY6GC5bw1WuywXeKInJd912165ulxjtl0ZA2SiaRlMZ_tlVqEwD8EKUFGzMJ7KUm_J4CLYBYsG2Ny9p3xWT-QpVk841jG8mAUr3tVZ6dgRXthjO93rAPltEQSnVJ0IS-ujynYImBKgdY3h-5CCbdne9oVhejsYWR_7pOBrJXF76jLeF_wc-e9aysIgZWoLNGdTgKEBRJZVxSJmJsS4LjIHCEjmw6Rs58zAed4ElZG-ft0hDYP-eYRT_7rk-pI"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto p-gutter lg:p-margin bg-background">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-6">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-1">GitOps Pipeline</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">ArgoCD Application Sync &amp; Gitea Repositories</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded font-data-md text-data-md flex items-center gap-2 hover:bg-surface-tint transition-colors">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+                    Sync All
+                </button>
+</div>
+<!-- ArgoCD Apps Grid -->
+<div class="mb-8">
+<h2 class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-widest mb-4 border-b border-outline-variant pb-2">ArgoCD Applications</h2>
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+<!-- App Card 1 - Healthy -->
+<div class="bg-surface-container border border-outline-variant rounded p-4 flex flex-col relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-data-lg text-data-lg text-on-surface mb-1">auth-service-prod</h3>
+<div class="font-label-xs text-label-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">folder</span>
+                                    ns: prod-auth
+                                </div>
+</div>
+<div class="px-2 py-1 bg-surface-container-highest border border-outline-variant rounded flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary" style="box-shadow: 0 0 8px theme('colors.primary')"></span>
+<span class="font-label-xs text-label-xs text-primary uppercase">Synced</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-3 mb-4 flex-1">
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">HEALTH</div>
+<div class="font-data-md text-data-md text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">favorite</span> Healthy
+                                </div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">REPO URL</div>
+<div class="font-data-md text-data-md text-on-surface truncate" title="git.internal.corp/core/auth-service">.../core/auth-service</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">LAST SYNC</div>
+<div class="font-data-md text-data-md text-on-surface">2m ago</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">COMMIT</div>
+<div class="font-data-md text-data-md text-secondary">a1b2c3d</div>
+</div>
+</div>
+</div>
+<!-- App Card 2 - OutOfSync -->
+<div class="bg-surface-container border border-outline-variant rounded p-4 flex flex-col relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary-container"></div>
+<div class="flex justify-between items-start mb-4 pl-2">
+<div>
+<h3 class="font-data-lg text-data-lg text-on-surface mb-1">payment-gateway</h3>
+<div class="font-label-xs text-label-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">folder</span>
+                                    ns: prod-finance
+                                </div>
+</div>
+<div class="px-2 py-1 bg-surface-container-highest border border-tertiary-container rounded flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse" style="box-shadow: 0 0 8px theme('colors.tertiary-container')"></span>
+<span class="font-label-xs text-label-xs text-tertiary-container uppercase">OutOfSync</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-3 mb-4 flex-1 pl-2">
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">HEALTH</div>
+<div class="font-data-md text-data-md text-tertiary-container flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">sync</span> Progressing
+                                </div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">REPO URL</div>
+<div class="font-data-md text-data-md text-on-surface truncate" title="git.internal.corp/finance/payment-gw">.../finance/payment-gw</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">LAST SYNC</div>
+<div class="font-data-md text-data-md text-on-surface">15s ago</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">COMMIT</div>
+<div class="font-data-md text-data-md text-secondary">f8e7d6c</div>
+</div>
+</div>
+</div>
+<!-- App Card 3 - Degraded -->
+<div class="bg-surface-container border border-error rounded p-4 flex flex-col relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-error"></div>
+<div class="flex justify-between items-start mb-4 pl-2">
+<div>
+<h3 class="font-data-lg text-data-lg text-on-surface mb-1">search-indexer</h3>
+<div class="font-label-xs text-label-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">folder</span>
+                                    ns: data-ops
+                                </div>
+</div>
+<div class="px-2 py-1 bg-surface-container-highest border border-error rounded flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-error" style="box-shadow: 0 0 8px theme('colors.error')"></span>
+<span class="font-label-xs text-label-xs text-error uppercase">Degraded</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-3 mb-4 flex-1 pl-2">
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">HEALTH</div>
+<div class="font-data-md text-data-md text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">warning</span> Degraded
+                                </div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">REPO URL</div>
+<div class="font-data-md text-data-md text-on-surface truncate" title="git.internal.corp/data/search-idx">.../data/search-idx</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">LAST SYNC</div>
+<div class="font-data-md text-data-md text-on-surface">45m ago</div>
+</div>
+<div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mb-1">COMMIT</div>
+<div class="font-data-md text-data-md text-secondary">9a8b7c6</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Gitea Panel -->
+<div>
+<h2 class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-widest mb-4 border-b border-outline-variant pb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">source</span> Gitea Repositories
+                </h2>
+<div class="bg-surface-container border border-outline-variant rounded overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high border-b border-[#30363d]">
+<th class="p-3 font-label-xs text-label-xs text-on-surface-variant">REPO NAME</th>
+<th class="p-3 font-label-xs text-label-xs text-on-surface-variant">DEFAULT BRANCH</th>
+<th class="p-3 font-label-xs text-label-xs text-on-surface-variant">OPEN PRs</th>
+<th class="p-3 font-label-xs text-label-xs text-on-surface-variant">LAST PUSH</th>
+<th class="p-3 font-label-xs text-label-xs text-on-surface-variant text-right">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="font-data-md text-data-md">
+<tr class="border-b border-[#30363d] hover:bg-surface-container-highest transition-colors">
+<td class="p-3 text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">folder_open</span>
+                                        core/auth-service
+                                    </td>
+<td class="p-3 text-secondary">main</td>
+<td class="p-3 text-on-surface">
+<span class="inline-flex items-center justify-center min-w-[24px] h-6 px-1 rounded bg-surface-container-highest border border-outline-variant text-primary text-xs">2</span>
+</td>
+<td class="p-3 text-on-surface-variant">10 mins ago</td>
+<td class="p-3 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-[#30363d] hover:bg-surface-container-highest transition-colors">
+<td class="p-3 text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">folder_open</span>
+                                        finance/payment-gw
+                                    </td>
+<td class="p-3 text-secondary">master</td>
+<td class="p-3 text-on-surface">
+<span class="inline-flex items-center justify-center min-w-[24px] h-6 px-1 rounded bg-surface-container-highest border border-outline-variant text-tertiary-container text-xs">5</span>
+</td>
+<td class="p-3 text-on-surface-variant">1 hour ago</td>
+<td class="p-3 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-[#30363d] hover:bg-surface-container-highest transition-colors">
+<td class="p-3 text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">folder_open</span>
+                                        data/search-idx
+                                    </td>
+<td class="p-3 text-secondary">main</td>
+<td class="p-3 text-on-surface">
+<span class="inline-flex items-center justify-center min-w-[24px] h-6 px-1 rounded bg-surface-container-highest border border-outline-variant text-on-surface-variant text-xs">0</span>
+</td>
+<td class="p-3 text-on-surface-variant">3 days ago</td>
+<td class="p-3 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

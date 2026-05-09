@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: devops-backend
+    restart: unless-stopped
+    pid: "host"
+    ports:
+      - "8000:8000"
+    volumes:
+      - /run/user/1000/podman/podman.sock:/var/run/docker.sock:rw
+      - /var/log:/host-logs:ro
+    environment:
+      - PBS_API_URL=${PBS_API_URL:-}
+      - PBS_API_TOKEN=${PBS_API_TOKEN:-}
+      - PBS_DATASTORE=${PBS_DATASTORE:-}
+      - TRAEFIK_ACME_PATH=${TRAEFIK_ACME_PATH:-/etc/traefik/acme.json}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - devops-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: devops-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - devops-net
+
+networks:
+  devops-net:
+    driver: bridge

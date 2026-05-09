@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOps Manager - Services</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#39d353",
+                    "outline-variant": "#3d4a3b",
+                    "on-error": "#690005",
+                    "surface-container-lowest": "#081008",
+                    "on-tertiary-fixed": "#3d0605",
+                    "on-background": "#dce5d6",
+                    "on-secondary-fixed-variant": "#42474f",
+                    "surface-variant": "#2f372d",
+                    "surface-bright": "#333b31",
+                    "on-secondary": "#2c3138",
+                    "on-primary-container": "#005517",
+                    "primary-fixed": "#6fff7b",
+                    "inverse-on-surface": "#2a3329",
+                    "on-secondary-fixed": "#171c23",
+                    "inverse-surface": "#dce5d6",
+                    "secondary-fixed": "#dee2ec",
+                    "surface-container-low": "#161e15",
+                    "tertiary-fixed-dim": "#ffb4ab",
+                    "tertiary-fixed": "#ffdad6",
+                    "tertiary-container": "#ff9f94",
+                    "surface-container-high": "#242c22",
+                    "on-surface-variant": "#bccbb6",
+                    "surface-tint": "#4be260",
+                    "on-primary": "#00390c",
+                    "primary": "#5bf06c",
+                    "error": "#ffb4ab",
+                    "surface-container-highest": "#2f372d",
+                    "surface-container": "#1a2218",
+                    "tertiary": "#ffc7c0",
+                    "secondary": "#c2c7d0",
+                    "on-tertiary-fixed-variant": "#76312b",
+                    "on-primary-fixed": "#002205",
+                    "on-surface": "#dce5d6",
+                    "on-tertiary-container": "#79332d",
+                    "inverse-primary": "#006e20",
+                    "primary-fixed-dim": "#4be260",
+                    "on-tertiary": "#591b17",
+                    "on-primary-fixed-variant": "#005316",
+                    "surface": "#0e150d",
+                    "secondary-fixed-dim": "#c2c7d0",
+                    "secondary-container": "#42474f",
+                    "on-secondary-container": "#b1b5be",
+                    "surface-dim": "#0e150d",
+                    "error-container": "#93000a",
+                    "on-error-container": "#ffdad6",
+                    "background": "#0e150d",
+                    "outline": "#869582"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "container-max": "1440px",
+                    "margin": "24px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "data-lg": ["JetBrains Mono"],
+                    "body-md": ["Inter"],
+                    "label-xs": ["JetBrains Mono"],
+                    "data-md": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "data-lg": ["18px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "label-xs": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "data-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Custom scrollbar for terminal aesthetic */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: theme('colors.surface-container-lowest'); }
+        ::-webkit-scrollbar-thumb { background: theme('colors.surface-variant'); border-radius: 0px; }
+        ::-webkit-scrollbar-thumb:hover { background: theme('colors.outline-variant'); }
+        
+        /* Utility for input focus terminal style */
+        .terminal-focus:focus { outline: none; border-color: theme('colors.primary'); box-shadow: inset 0 0 0 1px theme('colors.primary'); }
+        
+        /* Toggle Switch styling */
+        .toggle-checkbox:checked { right: 0; border-color: theme('colors.primary'); background-color: theme('colors.primary'); }
+        .toggle-checkbox:checked + .toggle-label { background-color: theme('colors.primary-container'); }
+        
+        /* Glow animations */
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0px theme('colors.error'); }
+            50% { box-shadow: 0 0 12px theme('colors.error'); }
+            100% { box-shadow: 0 0 0px theme('colors.error'); }
+        }
+        .pulse-error { animation: pulse-red 2s infinite; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen flex antialiased">
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-surface-container dark:bg-surface-container text-primary-container dark:text-primary-container font-data-md text-data-md dark:text-on-surface-variant fixed left-0 top-0 h-screen w-[240px] border-r border-outline-variant dark:border-outline-variant flex flex-col h-full py-4 z-40 hidden md:flex transition-all duration-200 ease-in-out">
+<!-- Brand Header -->
+<div class="px-6 pb-6 border-b border-outline-variant/50 mb-4 flex flex-col gap-1">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-primary text-xl">terminal</span>
+</div>
+<h1 class="font-headline-md text-headline-md font-black text-primary dark:text-primary uppercase tracking-wider">Core Engine</h1>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant pl-11">v2.4.1-stable</span>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 overflow-y-auto px-2 space-y-1">
+<!-- Inactive -->
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px] group-hover:text-on-surface transition-colors">dashboard</span>
+                Overview
+            </a>
+<!-- Inactive -->
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px] group-hover:text-on-surface transition-colors">storage</span>
+                Storage
+            </a>
+<!-- Active (Services) -->
+<a class="border-l-2 border-primary-container bg-surface-container-high text-primary dark:text-primary flex items-center py-3 px-4 transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">settings_input_component</span>
+                Services
+            </a>
+<!-- Inactive -->
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px] group-hover:text-on-surface transition-colors">hub</span>
+                Kubernetes
+            </a>
+<!-- Inactive -->
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px] group-hover:text-on-surface transition-colors">sync</span>
+                GitOps
+            </a>
+<!-- Inactive -->
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px] group-hover:text-on-surface transition-colors">backup</span>
+                Backups
+            </a>
+<!-- Inactive -->
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px] group-hover:text-on-surface transition-colors">lan</span>
+                Network
+            </a>
+<!-- Inactive -->
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px] group-hover:text-on-surface transition-colors">security</span>
+                Security
+            </a>
+<!-- Inactive -->
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px] group-hover:text-on-surface transition-colors">terminal</span>
+                Logs
+            </a>
+</div>
+<!-- Footer Navigation -->
+<div class="px-2 mt-auto border-t border-outline-variant/50 pt-4 space-y-1">
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-2 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[18px] group-hover:text-on-surface transition-colors">help</span>
+                Documentation
+            </a>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-2 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 text-[18px] group-hover:text-on-surface transition-colors">contact_support</span>
+                Support
+            </a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="md:ml-[240px] flex-1 flex flex-col min-h-screen w-full">
+<!-- TopAppBar (Shared Component) -->
+<header class="bg-surface dark:bg-surface text-primary dark:text-primary font-headline-md text-headline-md dark:text-on-surface tracking-tight docked full-width top-0 z-50 border-b border-outline-variant dark:border-outline-variant flex justify-between items-center w-full px-margin h-16 sticky">
+<div class="flex items-center gap-6">
+<!-- Search Bar (on_left) -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">search</span>
+<input class="bg-surface-container-highest border border-outline-variant text-on-surface font-data-md text-data-md rounded-none py-1.5 pl-10 pr-4 w-64 terminal-focus transition-colors placeholder:text-on-surface-variant/50" placeholder="Search resources..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-6">
+<!-- Trailing Secondary Action -->
+<div class="hidden lg:flex items-center gap-2 px-3 py-1 bg-surface-container-low border border-outline-variant/50 rounded font-data-md text-data-md text-on-surface-variant">
+<div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_theme(colors.primary)]"></div>
+                    node-01.prod.cluster
+                </div>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-2 border-l border-outline-variant/50 pl-6">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:opacity-80 rounded">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:opacity-80 rounded relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary rounded-full"></span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:opacity-80 rounded">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+</div>
+<!-- Profile Image -->
+<div class="w-8 h-8 rounded bg-surface-variant border border-outline-variant overflow-hidden flex-shrink-0 ml-2">
+<!-- Placeholder using a generic pattern for technical aesthetic -->
+<div class="w-full h-full bg-[linear-gradient(45deg,theme(colors.surface-container-highest)_25%,transparent_25%,transparent_75%,theme(colors.surface-container-highest)_75%,theme(colors.surface-container-highest)),linear-gradient(45deg,theme(colors.surface-container-highest)_25%,transparent_25%,transparent_75%,theme(colors.surface-container-highest)_75%,theme(colors.surface-container-highest))] bg-[length:8px_8px] bg-[position:0_0,4px_4px]"></div>
+</div>
+</div>
+</header>
+<!-- Page Content Canvas -->
+<main class="flex-1 p-margin flex flex-col gap-gutter">
+<!-- Page Header & Controls -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-2">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-1">System Services</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage and monitor systemd service states.</p>
+</div>
+<div class="flex items-center gap-3">
+<!-- Status Filter Dropdown -->
+<div class="relative">
+<select class="appearance-none bg-surface border border-outline-variant text-on-surface font-data-md text-data-md rounded-none py-1.5 pl-3 pr-8 terminal-focus cursor-pointer">
+<option value="all">Status: All</option>
+<option value="active">Status: Active</option>
+<option value="inactive">Status: Inactive</option>
+<option value="failed">Status: Failed</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1.5 text-on-surface-variant pointer-events-none text-[18px]">arrow_drop_down</span>
+</div>
+<button class="bg-primary-container text-on-primary-container font-data-md text-data-md px-4 py-1.5 rounded-none hover:bg-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        New Unit
+                    </button>
+</div>
+</div>
+<!-- Main Data Table Container -->
+<div class="bg-surface border border-outline-variant rounded-sm overflow-hidden flex-1 flex flex-col">
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse whitespace-nowrap">
+<thead class="bg-surface-container-highest border-b border-outline-variant sticky top-0 z-10">
+<tr>
+<th class="py-2 px-3 font-label-xs text-label-xs text-on-surface-variant w-1/4 uppercase tracking-wider">Service Name</th>
+<th class="py-2 px-3 font-label-xs text-label-xs text-on-surface-variant w-2/5 uppercase tracking-wider">Description</th>
+<th class="py-2 px-3 font-label-xs text-label-xs text-on-surface-variant w-32 uppercase tracking-wider">Status</th>
+<th class="py-2 px-3 font-label-xs text-label-xs text-on-surface-variant w-24 uppercase tracking-wider text-center">Enabled</th>
+<th class="py-2 px-3 font-label-xs text-label-xs text-on-surface-variant w-32 uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-data-md text-data-md text-on-surface divide-y divide-outline-variant/30 bg-surface">
+<!-- Row: Active -->
+<tr class="hover:bg-surface-container-highest/50 transition-colors border-l-[3px] border-transparent group">
+<td class="py-3 px-3 font-bold text-primary group-hover:text-primary-fixed transition-colors">nginx.service</td>
+<td class="py-3 px-3 text-on-surface-variant truncate max-w-[300px]" title="A high performance web server and a reverse proxy server">A high performance web server and a reverse proxy server</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center justify-center px-2 py-0.5 border border-primary text-primary font-label-xs text-label-xs uppercase tracking-wider shadow-[0_0_8px_theme(colors.primary)] bg-primary/10 rounded-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5"></span>
+                                        Active
+                                    </span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-center">
+<div class="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-surface border border-outline-variant appearance-none cursor-pointer z-10 top-0.5 right-0 translate-x-0 transition-transform duration-200" id="toggle1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-primary-container/30 cursor-pointer border border-outline-variant/50" for="toggle1"></label>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-on-surface-variant hover:text-primary rounded" title="Start"><span class="material-symbols-outlined text-[20px]">play_arrow</span></button>
+<button class="p-1 text-on-surface-variant hover:text-error rounded" title="Stop"><span class="material-symbols-outlined text-[20px]">stop</span></button>
+<button class="p-1 text-on-surface-variant hover:text-secondary rounded" title="Restart"><span class="material-symbols-outlined text-[20px]">refresh</span></button>
+</div>
+</td>
+</tr>
+<!-- Row: Failed (Highlighted) -->
+<tr class="hover:bg-error-container/10 bg-error-container/5 transition-colors border-l-[3px] border-error group relative">
+<td class="py-3 px-3 font-bold text-error">docker.service</td>
+<td class="py-3 px-3 text-on-surface-variant truncate max-w-[300px]" title="Docker Application Container Engine">Docker Application Container Engine</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center justify-center px-2 py-0.5 border border-error text-error font-label-xs text-label-xs uppercase tracking-wider pulse-error bg-error/10 rounded-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-error mr-1.5"></span>
+                                        Failed
+                                    </span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-center">
+<div class="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-surface border border-outline-variant appearance-none cursor-pointer z-10 top-0.5 right-0 translate-x-0 transition-transform duration-200" id="toggle2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-primary-container/30 cursor-pointer border border-outline-variant/50" for="toggle2"></label>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-end gap-1 opacity-100">
+<button class="p-1 text-on-surface-variant hover:text-primary rounded" title="Start"><span class="material-symbols-outlined text-[20px]">play_arrow</span></button>
+<button class="p-1 text-on-surface-variant hover:text-error rounded opacity-30 cursor-not-allowed" title="Stop"><span class="material-symbols-outlined text-[20px]">stop</span></button>
+<button class="p-1 text-error hover:text-error-container rounded" title="Restart"><span class="material-symbols-outlined text-[20px]">refresh</span></button>
+</div>
+</td>
+</tr>
+<!-- Row: Active -->
+<tr class="hover:bg-surface-container-highest/50 transition-colors border-l-[3px] border-transparent group">
+<td class="py-3 px-3 font-bold text-primary group-hover:text-primary-fixed transition-colors">ssh.service</td>
+<td class="py-3 px-3 text-on-surface-variant truncate max-w-[300px]" title="OpenBSD Secure Shell server">OpenBSD Secure Shell server</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center justify-center px-2 py-0.5 border border-primary text-primary font-label-xs text-label-xs uppercase tracking-wider shadow-[0_0_8px_theme(colors.primary)] bg-primary/10 rounded-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5"></span>
+                                        Active
+                                    </span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-center">
+<div class="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-surface border border-outline-variant appearance-none cursor-pointer z-10 top-0.5 right-0 translate-x-0 transition-transform duration-200" id="toggle3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-primary-container/30 cursor-pointer border border-outline-variant/50" for="toggle3"></label>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-on-surface-variant hover:text-primary rounded" title="Start"><span class="material-symbols-outlined text-[20px]">play_arrow</span></button>
+<button class="p-1 text-on-surface-variant hover:text-error rounded" title="Stop"><span class="material-symbols-outlined text-[20px]">stop</span></button>
+<button class="p-1 text-on-surface-variant hover:text-secondary rounded" title="Restart"><span class="material-symbols-outlined text-[20px]">refresh</span></button>
+</div>
+</td>
+</tr>
+<!-- Row: Inactive -->
+<tr class="hover:bg-surface-container-highest/50 transition-colors border-l-[3px] border-transparent group opacity-70 hover:opacity-100">
+<td class="py-3 px-3 font-bold text-on-surface">postfix.service</td>
+<td class="py-3 px-3 text-on-surface-variant truncate max-w-[300px]" title="Postfix Mail Transport Agent">Postfix Mail Transport Agent</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center justify-center px-2 py-0.5 border border-outline text-outline font-label-xs text-label-xs uppercase tracking-wider rounded-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-outline mr-1.5"></span>
+                                        Inactive
+                                    </span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-center">
+<div class="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-surface border border-outline-variant appearance-none cursor-pointer z-10 top-0.5 left-0 translate-x-0 transition-transform duration-200" id="toggle4" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-container-highest cursor-pointer border border-outline-variant/50" for="toggle4"></label>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-on-surface-variant hover:text-primary rounded" title="Start"><span class="material-symbols-outlined text-[20px]">play_arrow</span></button>
+<button class="p-1 text-on-surface-variant hover:text-error rounded opacity-30 cursor-not-allowed" title="Stop"><span class="material-symbols-outlined text-[20px]">stop</span></button>
+<button class="p-1 text-on-surface-variant hover:text-secondary rounded opacity-30 cursor-not-allowed" title="Restart"><span class="material-symbols-outlined text-[20px]">refresh</span></button>
+</div>
+</td>
+</tr>
+<!-- Row: Active -->
+<tr class="hover:bg-surface-container-highest/50 transition-colors border-l-[3px] border-transparent group">
+<td class="py-3 px-3 font-bold text-primary group-hover:text-primary-fixed transition-colors">prometheus.service</td>
+<td class="py-3 px-3 text-on-surface-variant truncate max-w-[300px]" title="Monitoring system and time series database">Monitoring system and time series database</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center justify-center px-2 py-0.5 border border-primary text-primary font-label-xs text-label-xs uppercase tracking-wider shadow-[0_0_8px_theme(colors.primary)] bg-primary/10 rounded-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5"></span>
+                                        Active
+                                    </span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-center">
+<div class="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-surface border border-outline-variant appearance-none cursor-pointer z-10 top-0.5 right-0 translate-x-0 transition-transform duration-200" id="toggle5" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-primary-container/30 cursor-pointer border border-outline-variant/50" for="toggle5"></label>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-on-surface-variant hover:text-primary rounded" title="Start"><span class="material-symbols-outlined text-[20px]">play_arrow</span></button>
+<button class="p-1 text-on-surface-variant hover:text-error rounded" title="Stop"><span class="material-symbols-outlined text-[20px]">stop</span></button>
+<button class="p-1 text-on-surface-variant hover:text-secondary rounded" title="Restart"><span class="material-symbols-outlined text-[20px]">refresh</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination Info -->
+<div class="bg-surface-container-highest border-t border-outline-variant py-2 px-4 flex justify-between items-center text-on-surface-variant font-data-md text-data-md">
+<span>Showing 1 to 5 of 124 units</span>
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1 cursor-pointer hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span> Prev
+                        </span>
+<span class="flex items-center gap-1 cursor-pointer hover:text-on-surface transition-colors">
+                            Next <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

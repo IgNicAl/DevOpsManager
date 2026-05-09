@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOps Manager - Kubernetes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#39d353",
+                        "outline-variant": "#3d4a3b",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#081008",
+                        "on-tertiary-fixed": "#3d0605",
+                        "on-background": "#dce5d6",
+                        "on-secondary-fixed-variant": "#42474f",
+                        "surface-variant": "#2f372d",
+                        "surface-bright": "#333b31",
+                        "on-secondary": "#2c3138",
+                        "on-primary-container": "#005517",
+                        "primary-fixed": "#6fff7b",
+                        "inverse-on-surface": "#2a3329",
+                        "on-secondary-fixed": "#171c23",
+                        "inverse-surface": "#dce5d6",
+                        "secondary-fixed": "#dee2ec",
+                        "surface-container-low": "#161e15",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "tertiary-fixed": "#ffdad6",
+                        "tertiary-container": "#ff9f94",
+                        "surface-container-high": "#242c22",
+                        "on-surface-variant": "#bccbb6",
+                        "surface-tint": "#4be260",
+                        "on-primary": "#00390c",
+                        "primary": "#5bf06c",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#2f372d",
+                        "surface-container": "#1a2218",
+                        "tertiary": "#ffc7c0",
+                        "secondary": "#c2c7d0",
+                        "on-tertiary-fixed-variant": "#76312b",
+                        "on-primary-fixed": "#002205",
+                        "on-surface": "#dce5d6",
+                        "on-tertiary-container": "#79332d",
+                        "inverse-primary": "#006e20",
+                        "primary-fixed-dim": "#4be260",
+                        "on-tertiary": "#591b17",
+                        "on-primary-fixed-variant": "#005316",
+                        "surface": "#0e150d",
+                        "secondary-fixed-dim": "#c2c7d0",
+                        "secondary-container": "#42474f",
+                        "on-secondary-container": "#b1b5be",
+                        "surface-dim": "#0e150d",
+                        "error-container": "#93000a",
+                        "on-error-container": "#ffdad6",
+                        "background": "#0e150d",
+                        "outline": "#869582"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-max": "1440px",
+                        "margin": "24px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-lg": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "label-xs": ["JetBrains Mono"],
+                        "data-md": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "data-lg": ["18px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "label-xs": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "data-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="bg-surface-container dark:bg-surface-container fixed left-0 top-0 h-screen w-[240px] border-r border-outline-variant dark:border-outline-variant flat no shadows flex flex-col h-full py-4 z-40 hidden md:flex">
+<div class="px-margin mb-6 flex items-center gap-3">
+<span aria-hidden="true" class="material-symbols-outlined text-primary text-3xl" data-icon="hub">hub</span>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-black text-primary dark:text-primary leading-tight">Core Engine</h1>
+<p class="font-data-md text-data-md dark:text-on-surface-variant text-xs">v2.4.1-stable</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="font-data-md text-data-md">Overview</span>
+</a>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="storage">storage</span>
+<span class="font-data-md text-data-md">Storage</span>
+</a>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings_input_component">settings_input_component</span>
+<span class="font-data-md text-data-md">Services</span>
+</a>
+<a class="border-l-2 border-primary-container bg-surface-container-high text-primary dark:text-primary flex items-center py-3 px-4 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="hub" style="font-variation-settings: 'FILL' 1;">hub</span>
+<span class="font-data-md text-data-md">Kubernetes</span>
+</a>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="sync">sync</span>
+<span class="font-data-md text-data-md">GitOps</span>
+</a>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="backup">backup</span>
+<span class="font-data-md text-data-md">Backups</span>
+</a>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="lan">lan</span>
+<span class="font-data-md text-data-md">Network</span>
+</a>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="security">security</span>
+<span class="font-data-md text-data-md">Security</span>
+</a>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="terminal">terminal</span>
+<span class="font-data-md text-data-md">Logs</span>
+</a>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="help">help</span>
+<span class="font-data-md text-data-md">Documentation</span>
+</a>
+<a class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="contact_support">contact_support</span>
+<span class="font-data-md text-data-md">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 md:ml-[240px] flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface docked full-width top-0 z-50 border-b border-outline-variant dark:border-outline-variant flat no shadows flex justify-between items-center w-full px-margin h-16 sticky">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface uppercase tracking-wider md:hidden">DevOps Manager</span>
+<!-- Search (on_left) -->
+<div class="hidden md:flex items-center bg-surface-container-highest rounded px-3 py-1.5 border border-outline-variant focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-data-md font-data-md text-on-surface placeholder-on-surface-variant w-64 p-0" placeholder="Search resources..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-data-md text-data-md text-on-surface-variant hidden lg:inline-block">node-01.prod.cluster</span>
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:opacity-80 transition-all p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+</button>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:opacity-80 transition-all p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:opacity-80 transition-all p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<img alt="Administrator Profile" class="w-8 h-8 rounded bg-surface-container-highest border border-outline-variant" data-alt="A small square profile picture showing a stylized, high-contrast monochrome avatar of a system administrator against a dark background, fitting a brutalist technical UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJY-qgXllyZY70Bqrip-CQsZtkAs8I1ZxRZrussbisJPrnZ5LfzKMgyzJVGdeUyJngQtnGYM-tM1zAWb_geX2tvhlO_3CkeAUcNtNRJ2h6JqMs_JKRH0Ijej_GgWCIxU69QL55Ujhf0TDLeA3D6VM0qKi_sklMJ5TtJ5RgV4IwOfdgB-twm3xmqeTN5cbCkGgpyXvk-OvFL1KR4SI49PXMsdItpyLX35dZ7odnW1-ynfSj2x-5iJchC2Y-hO6dmhEqJnvodXoTy5w"/>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-margin overflow-x-hidden">
+<!-- Page Header & Tabs -->
+<div class="mb-gutter flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Kubernetes Cluster</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage and monitor cluster workloads.</p>
+</div>
+<!-- Tab Navigation -->
+<div class="flex border-b border-outline-variant w-full md:w-auto overflow-x-auto no-scrollbar">
+<button class="px-4 py-2 font-data-md text-data-md border-b-2 border-primary text-primary whitespace-nowrap">Nodes</button>
+<button class="px-4 py-2 font-data-md text-data-md border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-colors whitespace-nowrap">Pods</button>
+<button class="px-4 py-2 font-data-md text-data-md border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-colors whitespace-nowrap">Deployments</button>
+</div>
+</div>
+<!-- Nodes Tab Content (Active) -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
+<!-- Node Card 1 -->
+<div class="bg-[#161b22] border border-outline-variant p-3 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="dns">dns</span>
+<h3 class="font-data-md text-data-md text-on-surface">k8s-master-01</h3>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 border border-outline-variant">control-plane,master</span>
+</div>
+<div class="font-label-xs text-label-xs text-primary border border-primary px-2 py-0.5 shadow-[0_0_8px_rgba(91,240,108,0.3)]">Ready</div>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<div>
+<div class="flex justify-between font-label-xs text-label-xs mb-1 text-on-surface-variant">
+<span>CPU</span>
+<span>45%</span>
+</div>
+<div class="w-full h-1 bg-[#21262d]">
+<div class="h-full bg-primary" style="width: 45%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-xs text-label-xs mb-1 text-on-surface-variant">
+<span>RAM</span>
+<span>72%</span>
+</div>
+<div class="w-full h-1 bg-[#21262d]">
+<div class="h-full bg-[#ffb4ab]" style="width: 72%"></div> <!-- Amber equivalent for 70-90% -->
+</div>
+</div>
+</div>
+<div class="mt-auto pt-2 border-t border-outline-variant flex justify-between items-center">
+<span class="font-label-xs text-label-xs text-on-surface-variant">K3s v1.28.4+k3s2</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant">Up 14d</span>
+</div>
+</div>
+<!-- Node Card 2 -->
+<div class="bg-[#161b22] border border-outline-variant p-3 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-on-surface text-lg" data-icon="dns">dns</span>
+<h3 class="font-data-md text-data-md text-on-surface">k8s-worker-01</h3>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 border border-outline-variant">worker</span>
+</div>
+<div class="font-label-xs text-label-xs text-primary border border-primary px-2 py-0.5 shadow-[0_0_8px_rgba(91,240,108,0.3)]">Ready</div>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<div>
+<div class="flex justify-between font-label-xs text-label-xs mb-1 text-on-surface-variant">
+<span>CPU</span>
+<span>88%</span>
+</div>
+<div class="w-full h-1 bg-[#21262d]">
+<div class="h-full bg-[#ffb4ab]" style="width: 88%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-xs text-label-xs mb-1 text-on-surface-variant">
+<span>RAM</span>
+<span>94%</span>
+</div>
+<div class="w-full h-1 bg-[#21262d]">
+<div class="h-full bg-error shadow-[0_0_8px_rgba(255,180,171,0.5)]" style="width: 94%"></div> <!-- Red equivalent > 90% -->
+</div>
+</div>
+</div>
+<div class="mt-auto pt-2 border-t border-outline-variant flex justify-between items-center">
+<span class="font-label-xs text-label-xs text-on-surface-variant">K3s v1.28.4+k3s2</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant">Up 14d</span>
+</div>
+</div>
+<!-- Node Card 3 -->
+<div class="bg-[#161b22] border border-outline-variant p-3 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-error text-lg" data-icon="warning">warning</span>
+<h3 class="font-data-md text-data-md text-on-surface">k8s-worker-02</h3>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 border border-outline-variant">worker</span>
+</div>
+<div class="font-label-xs text-label-xs text-error border border-error px-2 py-0.5 shadow-[0_0_8px_rgba(255,180,171,0.5)]">NotReady</div>
+</div>
+<div class="flex flex-col gap-2 mt-2 opacity-50">
+<div>
+<div class="flex justify-between font-label-xs text-label-xs mb-1 text-on-surface-variant">
+<span>CPU</span>
+<span>--%</span>
+</div>
+<div class="w-full h-1 bg-[#21262d]">
+<div class="h-full bg-outline-variant" style="width: 0%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-xs text-label-xs mb-1 text-on-surface-variant">
+<span>RAM</span>
+<span>--%</span>
+</div>
+<div class="w-full h-1 bg-[#21262d]">
+<div class="h-full bg-outline-variant" style="width: 0%"></div>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-2 border-t border-outline-variant flex justify-between items-center">
+<span class="font-label-xs text-label-xs text-on-surface-variant">K3s v1.28.4+k3s2</span>
+<span class="font-label-xs text-label-xs text-error">Down 2h</span>
+</div>
+</div>
+</div>
+<!-- Future Pods Table structure hinted (hidden for this view to match active state request, but requested in prompt so I will include it below as a separate block for completeness, though technically Tabs imply one is visible. The prompt asks for all 3 layouts, so I'll render them stacked but visually distinct or just render the Nodes as primary and show the others as if scrolled to or in a bento setup, but standard UI dictates tabs hide content. I will render them stacked to fulfill the prompt's request for all designs). -->
+<div class="mt-8 mb-4 border-b border-outline-variant pb-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Pods (Preview)</h3>
+</div>
+<div class="bg-[#161b22] border border-outline-variant overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-[#21262d] font-label-xs text-label-xs text-on-surface-variant uppercase border-b border-[#30363d]">
+<tr>
+<th class="px-3 py-2 font-normal w-8"></th>
+<th class="px-3 py-2 font-normal">Name</th>
+<th class="px-3 py-2 font-normal">Namespace</th>
+<th class="px-3 py-2 font-normal">Status</th>
+<th class="px-3 py-2 font-normal text-right">Restarts</th>
+<th class="px-3 py-2 font-normal">Node</th>
+<th class="px-3 py-2 font-normal text-right">Age</th>
+</tr>
+</thead>
+<tbody class="font-data-md text-data-md text-on-surface">
+<tr class="border-b border-[#30363d] hover:bg-surface-container-highest transition-colors">
+<td class="px-3 py-2 border-l-2 border-transparent text-center cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200">chevron_right</span>
+</td>
+<td class="px-3 py-2">nginx-deployment-7fb96c846b-8t4zk</td>
+<td class="px-3 py-2 text-on-surface-variant">production</td>
+<td class="px-3 py-2"><span class="text-primary">Running</span></td>
+<td class="px-3 py-2 text-right">0</td>
+<td class="px-3 py-2 text-on-surface-variant text-sm">k8s-worker-01</td>
+<td class="px-3 py-2 text-right text-on-surface-variant">2d</td>
+</tr>
+<tr class="border-b border-[#30363d] hover:bg-surface-container-highest transition-colors">
+<td class="px-3 py-2 border-l-2 border-transparent text-center cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200">chevron_right</span>
+</td>
+<td class="px-3 py-2">redis-cache-main-0</td>
+<td class="px-3 py-2 text-on-surface-variant">data</td>
+<td class="px-3 py-2"><span class="text-on-surface-variant">Pending</span></td>
+<td class="px-3 py-2 text-right">0</td>
+<td class="px-3 py-2 text-on-surface-variant text-sm">&lt;none&gt;</td>
+<td class="px-3 py-2 text-right text-on-surface-variant">5m</td>
+</tr>
+<tr class="bg-surface-container-high transition-colors">
+<td class="px-3 py-2 border-l-2 border-[#ffb4ab] text-center cursor-pointer">
+<span class="material-symbols-outlined text-on-surface text-sm transition-transform duration-200 rotate-90">chevron_right</span>
+</td>
+<td class="px-3 py-2">auth-service-api-v2-5c4d...</td>
+<td class="px-3 py-2 text-on-surface-variant">core-services</td>
+<td class="px-3 py-2"><span class="text-[#ffb4ab]">CrashLoopBackOff</span></td>
+<td class="px-3 py-2 text-right text-error font-bold">14</td>
+<td class="px-3 py-2 text-on-surface-variant text-sm">k8s-worker-01</td>
+<td class="px-3 py-2 text-right text-on-surface-variant">1h</td>
+</tr>
+<tr class="border-b border-[#30363d] bg-surface-container-lowest">
+<td class="p-4 border-l-2 border-[#ffb4ab]" colspan="7">
+<div class="flex flex-col lg:flex-row gap-6">
+<div class="flex-1">
+<h4 class="font-label-xs text-label-xs text-on-surface-variant uppercase mb-2">Logs (Tail)</h4>
+<div class="bg-[#0d1117] border border-outline-variant rounded p-3 font-data-md text-data-md text-on-surface-variant text-sm overflow-x-auto whitespace-pre">
+[2023-11-20T10:15:22Z] INFO: Initializing auth-service v2.1.0
+[2023-11-20T10:15:22Z] INFO: Connecting to database at db-master:5432...
+[2023-11-20T10:15:32Z] WARN: Connection attempt 1 failed: Connection timed out
+[2023-11-20T10:15:37Z] WARN: Connection attempt 2 failed: Connection timed out
+[2023-11-20T10:15:42Z] WARN: Connection attempt 3 failed: Connection timed out
+[2023-11-20T10:15:47Z] ERROR: Database connection failed after 3 retries.
+[2023-11-20T10:15:47Z] ERROR: SequelizeConnectionError: connect ETIMEDOUT 10.43.0.15:5432
+    at ConnectionManager.connect (/app/node_modules/sequelize/lib/dialects/postgres/connection-manager.js:182:24)
+    at async ConnectionManager._connect (/app/node_modules/sequelize/lib/dialects/abstract/connection-manager.js:318:24)
+[2023-11-20T10:15:47Z] FATAL: Service startup failed. Exiting...</div>
+</div>
+<div class="flex-1">
+<h4 class="font-label-xs text-label-xs text-on-surface-variant uppercase mb-2">Events</h4>
+<div class="flex flex-col gap-2">
+<div class="flex items-start gap-3 border-l-2 border-[#ffb4ab] pl-2">
+<span class="font-data-md text-data-md text-on-surface-variant text-xs mt-0.5">10:15:48</span>
+<span class="font-label-xs text-label-xs text-[#ffb4ab] border border-[#ffb4ab] px-1 rounded-sm">Warning</span>
+<span class="font-data-md text-data-md text-on-surface text-sm">Back-off restarting failed container</span>
+</div>
+<div class="flex items-start gap-3 border-l-2 border-outline-variant pl-2">
+<span class="font-data-md text-data-md text-on-surface-variant text-xs mt-0.5">10:15:22</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant border border-outline-variant px-1 rounded-sm">Normal</span>
+<span class="font-data-md text-data-md text-on-surface text-sm">Started container auth-service</span>
+</div>
+<div class="flex items-start gap-3 border-l-2 border-outline-variant pl-2">
+<span class="font-data-md text-data-md text-on-surface-variant text-xs mt-0.5">10:15:21</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant border border-outline-variant px-1 rounded-sm">Normal</span>
+<span class="font-data-md text-data-md text-on-surface text-sm">Created container auth-service</span>
+</div>
+<div class="flex items-start gap-3 border-l-2 border-outline-variant pl-2">
+<span class="font-data-md text-data-md text-on-surface-variant text-xs mt-0.5">10:15:20</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant border border-outline-variant px-1 rounded-sm">Normal</span>
+<span class="font-data-md text-data-md text-on-surface text-sm">Pulled image "registry/auth:v2"</span>
+</div>
+</div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="border-b border-[#30363d] hover:bg-surface-container-highest transition-colors">
+<td class="px-3 py-2 border-l-2 border-transparent text-center cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200">chevron_right</span>
+</td>
+<td class="px-3 py-2">batch-job-daily-sync-v8x2</td>
+<td class="px-3 py-2 text-on-surface-variant">jobs</td>
+<td class="px-3 py-2"><span class="text-secondary">Completed</span></td>
+<td class="px-3 py-2 text-right">0</td>
+<td class="px-3 py-2 text-on-surface-variant text-sm">k8s-worker-02</td>
+<td class="px-3 py-2 text-right text-on-surface-variant">4h</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-8 mb-4 border-b border-outline-variant pb-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Deployments (Preview)</h3>
+</div>
+<div class="bg-[#161b22] border border-outline-variant overflow-x-auto mb-8">
+<table class="w-full text-left border-collapse">
+<thead class="bg-[#21262d] font-label-xs text-label-xs text-on-surface-variant uppercase border-b border-[#30363d]">
+<tr>
+<th class="px-3 py-2 font-normal">Name</th>
+<th class="px-3 py-2 font-normal">Namespace</th>
+<th class="px-3 py-2 font-normal text-center">Replicas</th>
+<th class="px-3 py-2 font-normal">Image</th>
+<th class="px-3 py-2 font-normal text-right">Age</th>
+</tr>
+</thead>
+<tbody class="font-data-md text-data-md text-on-surface">
+<tr class="border-b border-[#30363d] hover:bg-surface-container-highest transition-colors">
+<td class="px-3 py-2">nginx-ingress-controller</td>
+<td class="px-3 py-2 text-on-surface-variant">ingress-nginx</td>
+<td class="px-3 py-2 text-center text-primary">3/3</td>
+<td class="px-3 py-2 text-on-surface-variant text-sm">registry.k8s.io/ingress-nginx/controller:v1.9.4</td>
+<td class="px-3 py-2 text-right text-on-surface-variant">45d</td>
+</tr>
+<tr class="border-b border-[#30363d] hover:bg-surface-container-highest transition-colors">
+<td class="px-3 py-2">frontend-webapp</td>
+<td class="px-3 py-2 text-on-surface-variant">production</td>
+<td class="px-3 py-2 text-center text-error font-bold">2/4</td>
+<td class="px-3 py-2 text-on-surface-variant text-sm">eu.gcr.io/proj/frontend:1.4.2-stable</td>
+<td class="px-3 py-2 text-right text-on-surface-variant">2d</td>
+</tr>
+<tr class="border-b border-[#30363d] hover:bg-surface-container-highest transition-colors">
+<td class="px-3 py-2">payment-gateway</td>
+<td class="px-3 py-2 text-on-surface-variant">production</td>
+<td class="px-3 py-2 text-center text-primary">2/2</td>
+<td class="px-3 py-2 text-on-surface-variant text-sm">eu.gcr.io/proj/payments:v0.9.1-beta</td>
+<td class="px-3 py-2 text-right text-on-surface-variant">12d</td>
+</tr>
+</tbody>
+</table>
+</div>
+</main>
+</div>
+</body></html>

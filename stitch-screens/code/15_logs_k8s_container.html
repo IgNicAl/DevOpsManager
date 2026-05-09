@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevOps Manager - Logs</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#081008",
+                    "primary": "#5bf06c",
+                    "background": "#0e150d",
+                    "inverse-primary": "#006e20",
+                    "secondary-fixed-dim": "#c2c7d0",
+                    "on-background": "#dce5d6",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-tertiary-fixed": "#3d0605",
+                    "inverse-on-surface": "#2a3329",
+                    "surface-variant": "#2f372d",
+                    "on-tertiary-fixed-variant": "#76312b",
+                    "tertiary-container": "#ff9f94",
+                    "primary-container": "#39d353",
+                    "surface-container-highest": "#2f372d",
+                    "secondary-container": "#42474f",
+                    "surface": "#0e150d",
+                    "on-secondary": "#2c3138",
+                    "on-error-container": "#ffdad6",
+                    "error": "#ffb4ab",
+                    "surface-container": "#1a2218",
+                    "surface-tint": "#4be260",
+                    "outline": "#869582",
+                    "surface-dim": "#0e150d",
+                    "on-error": "#690005",
+                    "primary-fixed-dim": "#4be260",
+                    "outline-variant": "#3d4a3b",
+                    "on-secondary-container": "#b1b5be",
+                    "on-surface-variant": "#bccbb6",
+                    "surface-container-low": "#161e15",
+                    "on-primary-container": "#005517",
+                    "on-primary-fixed-variant": "#005316",
+                    "on-primary": "#00390c",
+                    "primary-fixed": "#6fff7b",
+                    "surface-container-high": "#242c22",
+                    "on-secondary-fixed": "#171c23",
+                    "secondary-fixed": "#dee2ec",
+                    "error-container": "#93000a",
+                    "on-surface": "#dce5d6",
+                    "tertiary": "#ffc7c0",
+                    "tertiary-fixed-dim": "#ffb4ab",
+                    "inverse-surface": "#dce5d6",
+                    "on-tertiary": "#591b17",
+                    "on-primary-fixed": "#002205",
+                    "secondary": "#c2c7d0",
+                    "surface-bright": "#333b31",
+                    "on-secondary-fixed-variant": "#42474f",
+                    "on-tertiary-container": "#79332d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "unit": "4px",
+                    "gutter": "16px",
+                    "margin": "24px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "label-xs": ["JetBrains Mono"],
+                    "body-md": ["Inter"],
+                    "data-md": ["JetBrains Mono"],
+                    "data-lg": ["JetBrains Mono"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                    "label-xs": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                    "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+                    "data-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" }],
+                    "data-lg": ["18px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "500" }],
+                    "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Custom scrollbar for terminal aesthetic */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #081008; 
+            border-left: 1px solid #3d4a3b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2f372d;
+            border-radius: 0px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #42474f;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-hidden">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-margin h-16 bg-surface dark:bg-surface docked full-width top-0 z-50 border-b border-outline-variant dark:border-outline-variant flat no shadows">
+<!-- Search/Left side (as per JSON search_bar on left, though no explicit structure, we place brand/search) -->
+<div class="flex items-center gap-margin">
+<div class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface uppercase tracking-wider">DevOps Manager</div>
+<div class="hidden md:flex items-center bg-surface-container h-8 px-3 rounded border border-outline-variant">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none text-data-md font-data-md text-on-surface focus:ring-0 w-64 p-0 placeholder-on-surface-variant" placeholder="Search clusters, nodes..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-gutter">
+<div class="flex items-center bg-surface-container-high px-3 py-1 rounded border border-outline-variant cursor-pointer active:opacity-80 transition-all hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors">
+<span class="w-2 h-2 rounded-full bg-primary mr-2 shadow-[0_0_8px_#5bf06c]"></span>
+<span class="font-data-md text-data-md text-on-surface">node-01.prod.cluster</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:opacity-80 transition-all">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:opacity-80 transition-all relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full shadow-[0_0_8px_#ffb4ab]"></span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors cursor-pointer active:opacity-80 transition-all">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="w-8 h-8 rounded bg-surface-variant border border-outline-variant overflow-hidden ml-2">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="Close-up headshot of a professional system administrator in a dark, high-tech server room environment. The lighting is moody and cool, with subtle neon green reflections on their face indicating screen glare. The individual looks focused and authoritative, reinforcing a high-precision, technical atmosphere. The aesthetic is modern, high-contrast, and cinematic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ26Ocm6wNWd0V7AwYlh4wGJ-YU9vJ0QjlxrcGKQle3RXTXQiBXiO3tBF_qeuukN4uknZao2ENbvzsahxKKArlk8c9zFnT-brF0bjRYwcf6lPoCgzbRt3r_woFpneYQKkNa3GIPFaLXLzhVLrBo7hA98XJpQILmsftMFwfx3CY7QcPRlAwJh4A4dvFt__unPQJviBXWrw7k-H4s7JjmE9QYKc3v3UQblY7G9HdZDij-5Gs8TVYb60Te19mAO9_zb9bpXjUxa7ZvNQ"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full py-4 bg-surface-container dark:bg-surface-container fixed left-0 top-16 h-[calc(100vh-4rem)] w-[240px] border-r border-outline-variant dark:border-outline-variant flat no shadows z-40">
+<!-- Header section (JSON dictation) -->
+<div class="px-margin mb-6 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-high border border-outline flex items-center justify-center text-primary shadow-[0_0_8px_rgba(91,240,108,0.2)]">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm font-black text-primary dark:text-primary leading-tight">Core Engine</div>
+<div class="font-label-xs text-label-xs text-on-surface-variant mt-1">v2.4.1-stable</div>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex-1 overflow-y-auto">
+<ul class="flex flex-col font-data-md text-data-md dark:text-on-surface-variant transition-all duration-200 ease-in-out">
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="dashboard">dashboard</span>
+                        Overview
+                    </li>
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="storage">storage</span>
+                        Storage
+                    </li>
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="settings_input_component">settings_input_component</span>
+                        Services
+                    </li>
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="hub">hub</span>
+                        Kubernetes
+                    </li>
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="sync">sync</span>
+                        GitOps
+                    </li>
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="backup">backup</span>
+                        Backups
+                    </li>
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="lan">lan</span>
+                        Network
+                    </li>
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="security">security</span>
+                        Security
+                    </li>
+<!-- Active Tab -->
+<li class="border-l-2 border-primary-container bg-surface-container-high text-primary dark:text-primary flex items-center py-3 px-4 cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="terminal">terminal</span>
+                        Logs
+                    </li>
+</ul>
+</div>
+<!-- Footer Tabs -->
+<div class="mt-auto border-t border-outline-variant pt-2">
+<ul class="flex flex-col font-data-md text-data-md dark:text-on-surface-variant transition-all duration-200 ease-in-out">
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="help">help</span>
+                        Documentation
+                    </li>
+<li class="border-l-2 border-transparent text-on-surface-variant dark:text-on-surface-variant flex items-center py-3 px-4 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="contact_support">contact_support</span>
+                        Support
+                    </li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Canvas (Logs Viewer) -->
+<main class="flex-1 flex flex-col md:ml-[240px] h-[calc(100vh-4rem)] bg-background relative overflow-hidden">
+<!-- Viewer Header / Tabs -->
+<div class="flex items-center justify-between px-margin pt-4 border-b border-outline-variant bg-surface-container">
+<div class="flex space-x-6">
+<button class="pb-3 font-data-md text-data-md text-on-surface-variant hover:text-on-surface border-b-2 border-transparent transition-colors">System Log</button>
+<button class="pb-3 font-data-md text-data-md text-on-surface-variant hover:text-on-surface border-b-2 border-transparent transition-colors">Service</button>
+<button class="pb-3 font-data-md text-data-md text-on-surface-variant hover:text-on-surface border-b-2 border-transparent transition-colors">Docker</button>
+<!-- Active Viewer Tab -->
+<button class="pb-3 font-data-md text-data-md text-primary border-b-2 border-primary transition-colors flex items-center">
+<span class="material-symbols-outlined text-[16px] mr-2" data-icon="hub">hub</span>
+                        K8s Pod
+                    </button>
+</div>
+<div class="pb-3 font-label-xs text-label-xs text-on-surface-variant flex items-center">
+<span class="w-2 h-2 rounded-full bg-primary mr-2 animate-pulse"></span>
+                    Live Stream • 247 lines
+                </div>
+</div>
+<!-- Toolbar / Filters -->
+<div class="flex items-center justify-between px-margin py-3 bg-surface-container-low border-b border-outline-variant">
+<!-- Left Contextual Filters -->
+<div class="flex flex-wrap items-center gap-3">
+<!-- Namespace Selector -->
+<div class="flex items-center border border-outline-variant rounded bg-surface px-2 py-1 cursor-pointer hover:border-outline transition-colors">
+<span class="font-label-xs text-label-xs text-on-surface-variant mr-2">NS:</span>
+<span class="font-data-md text-data-md text-on-surface mr-1">kube-system</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div>
+<!-- Pod Selector -->
+<div class="flex items-center border border-outline-variant rounded bg-surface px-2 py-1 cursor-pointer hover:border-outline transition-colors">
+<span class="font-label-xs text-label-xs text-on-surface-variant mr-2">POD:</span>
+<span class="font-data-md text-data-md text-on-surface mr-1">api-server-7f8d...</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div><!-- Container Selector -->
+<div class="flex items-center border border-outline-variant rounded bg-surface px-2 py-1 cursor-pointer hover:border-outline transition-colors ml-2">
+<span class="font-label-xs text-label-xs text-on-surface-variant mr-2">CONTAINER:</span>
+<span class="font-data-md text-data-md text-on-surface mr-1">api-gateway</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div>
+<!-- Line Count Selector -->
+<div class="flex items-center border border-outline-variant rounded bg-surface px-2 py-1 cursor-pointer hover:border-outline transition-colors ml-2 border-l border-outline-variant pl-4">
+<span class="font-label-xs text-label-xs text-on-surface-variant mr-2">LINES:</span>
+<span class="font-data-md text-data-md text-on-surface mr-1">500</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div>
+</div>
+<!-- Right Search & Toggles -->
+<div class="flex items-center gap-3">
+<!-- Search Input -->
+<div class="flex items-center border border-outline-variant rounded bg-surface px-2 h-8 focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none text-data-md font-data-md text-on-surface focus:ring-0 w-48 p-0 placeholder-on-surface-variant" type="text" value="connection"/>
+<button class="ml-2 text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[14px]" data-icon="close">close</span>
+</button>
+</div>
+<!-- Auto-scroll Toggle (Active) -->
+<button class="h-8 px-3 rounded flex items-center gap-2 bg-primary-container/20 text-primary border border-primary-container transition-colors" title="Tail Logs">
+<span class="material-symbols-outlined text-[18px]" data-icon="vertical_align_bottom">vertical_align_bottom</span>
+<span class="font-label-xs text-label-xs">TAIL</span>
+</button>
+</div>
+</div>
+<!-- Terminal Area -->
+<div class="flex-1 bg-surface-container-lowest overflow-y-auto p-4 font-data-md text-data-md text-on-surface-variant leading-tight">
+<div class="flex flex-col gap-1">
+<!-- Log Line 1 -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:01.102Z</span>
+<span class="text-primary w-16 shrink-0 font-bold select-none">[INFO]</span>
+<span class="break-all">Starting Kubernetes API Server version v1.28.2...</span>
+</div>
+<!-- Log Line 2 -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:01.543Z</span>
+<span class="text-primary w-16 shrink-0 font-bold select-none">[INFO]</span>
+<span class="break-all">Loading configuration from /etc/kubernetes/manifests/kube-apiserver.yaml</span>
+</div>
+<!-- Log Line 3 -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:02.012Z</span>
+<span class="text-tertiary-container w-16 shrink-0 font-bold select-none">[WARN]</span>
+<span class="break-all">Deprecated flag --insecure-port is used. This flag will be removed in a future release.</span>
+</div>
+<!-- Log Line 4 (Search Highlight) -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:05.881Z</span>
+<span class="text-error w-16 shrink-0 font-bold select-none">[ERROR]</span>
+<span class="break-all">Failed to establish <span class="bg-primary text-on-primary px-1 rounded-sm mx-[1px]">connection</span> to etcd server at https://127.0.0.1:2379: dial tcp 127.0.0.1:2379: connect: <span class="bg-primary text-on-primary px-1 rounded-sm mx-[1px]">connection</span> refused</span>
+</div>
+<!-- Log Line 5 -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:06.105Z</span>
+<span class="text-primary w-16 shrink-0 font-bold select-none">[INFO]</span>
+<span class="break-all">Retrying <span class="bg-primary text-on-primary px-1 rounded-sm mx-[1px]">connection</span> to etcd (attempt 1/5)...</span>
+</div>
+<!-- Log Line 6 -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:08.450Z</span>
+<span class="text-primary w-16 shrink-0 font-bold select-none">[INFO]</span>
+<span class="break-all">Successfully connected to etcd server cluster ID: 8a5d3e2f1b</span>
+</div>
+<!-- Log Line 7 -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:09.001Z</span>
+<span class="text-primary w-16 shrink-0 font-bold select-none">[INFO]</span>
+<span class="break-all">Serving securely on 0.0.0.0:6443</span>
+</div>
+<!-- Log Line 8 -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:10.122Z</span>
+<span class="text-tertiary-container w-16 shrink-0 font-bold select-none">[WARN]</span>
+<span class="break-all">Rate limit threshold approached for namespace monitoring. Current usage: 85%</span>
+</div>
+<!-- Log Line 9 (Search Highlight) -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:15.553Z</span>
+<span class="text-error w-16 shrink-0 font-bold select-none">[ERROR]</span>
+<span class="break-all">Webhook calling failed for MutatingAdmissionWebhook "vpc-resource-mutating-webhook.k8s.aws": failed calling webhook "mutating-webhook.k8s.aws": Post "https://vpc-admission-webhook-svc.kube-system.svc:443/mutate?timeout=10s": net/http: request canceled while waiting for <span class="bg-primary text-on-primary px-1 rounded-sm mx-[1px]">connection</span> (Client.Timeout exceeded while awaiting headers)</span>
+</div>
+<!-- Log Line 10 -->
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:16.002Z</span>
+<span class="text-primary w-16 shrink-0 font-bold select-none">[INFO]</span>
+<span class="break-all">Garbage collection routine executed. Cleaned up 14 orphaned pods.</span>
+</div>
+<div class="flex hover:bg-surface-container-high px-1 -mx-1 rounded-sm transition-colors group"><span class="text-outline w-32 shrink-0 select-none font-data-md">[api-gateway]</span>
+<span class="text-surface-variant w-48 shrink-0 select-none">2023-10-27T14:32:18.991Z</span>
+<span class="text-primary w-16 shrink-0 font-bold select-none">[INFO]</span>
+<span class="break-all">Controller cache synced successfully.</span>
+</div>
+</div>
+</div>
+<!-- Bottom Status Bar for Terminal -->
+<div class="h-6 bg-surface-container-lowest border-t border-outline-variant flex items-center justify-between px-4 font-label-xs text-label-xs text-on-surface-variant select-none">
+<div class="flex gap-4">
+<span>UTF-8</span>
+<span>CRLF</span>
+<span>Logs tailing active</span>
+</div>
+<div class="flex gap-4">
+<span class="text-error">2 Errors</span>
+<span class="text-tertiary-container">2 Warnings</span>
+</div>
+</div>
+</main>
+</div>
+</body></html>
