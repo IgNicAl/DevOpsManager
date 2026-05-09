@@ -44,6 +44,8 @@ export const getDockerContainerLogs = (id: string, lines = 100) =>
 export const getDockerImages = () => api.get<ApiResponse<any[]>>('/api/docker/images');
 export const deleteDockerImage = (id: string) =>
   api.delete<ApiResponse<any>>(`/api/docker/images/${id}`, { data: { confirm: true } });
+export const getDockerNetworks = () => api.get<ApiResponse<any[]>>('/api/docker/networks');
+export const getDockerVolumes  = () => api.get<ApiResponse<any[]>>('/api/docker/volumes');
 
 // Logs
 export const getSystemLogs = (lines = 100, filter?: string) =>

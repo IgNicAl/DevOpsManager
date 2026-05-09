@@ -12,12 +12,15 @@ router = APIRouter(prefix="/api/docker", tags=["Docker"])
 
 
 def get_docker_client():
-    """Lazy Docker client — fails gracefully if Docker is not available."""
+    """Lazy Docker/Podman client — auto-negotiates API version via Unix socket."""
     try:
         import docker
-        return docker.from_env()
+        return docker.DockerClient(
+            base_url="unix:///var/run/docker.sock",
+            version="auto",
+        )
     except Exception as exc:
-        logger.warning("Docker not available: %s", exc)
+        logger.warning("Docker/Podman not available: %s", exc)
         return None
 
 
@@ -186,5 +189,52 @@ def delete_image(image_id: str, body: DeleteImageBody):
     try:
         client.images.remove(image_id, force=True)
         return ok({"image_id": image_id, "message": "Image removed"})
+    except Exception as exc:
+        return fail(str(exc))
+
+
+@router.get("/networks")
+def list_networks():
+    client = get_docker_client()
+    if not client:
+        return fail("Docker is not available")
+    try:
+        result = []
+        for net in client.networks.list():
+            ipam_configs = (net.attrs.get("IPAM") or {}).get("Config") or []
+            first = ipam_configs[0] if ipam_configs else {}
+            result.append({
+                "id": net.short_id,
+                "name": net.name,
+                "driver": net.attrs.get("Driver", ""),
+                "scope": net.attrs.get("Scope", ""),
+                "created": net.attrs.get("Created", ""),
+                "containers_count": len(net.attrs.get("Containers") or {}),
+                "subnet": first.get("Subnet", ""),
+                "gateway": first.get("Gateway", ""),
+            })
+        return ok(result)
+    except Exception as exc:
+        return fail(str(exc))
+
+
+@router.get("/volumes")
+def list_volumes():
+    client = get_docker_client()
+    if not client:
+        return fail("Docker is not available")
+    try:
+        result = []
+        for vol in client.volumes.list():
+            usage = vol.attrs.get("UsageData") or {}
+            result.append({
+                "name": vol.name,
+                "driver": vol.attrs.get("Driver", ""),
+                "mountpoint": vol.attrs.get("Mountpoint", ""),
+                "created": vol.attrs.get("CreatedAt", ""),
+                "size_bytes": usage.get("Size", -1),
+                "labels": vol.attrs.get("Labels") or {},
+            })
+        return ok(result)
     except Exception as exc:
         return fail(str(exc))

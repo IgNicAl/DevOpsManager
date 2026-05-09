@@ -1,6 +1,7 @@
 import json
 import os
 import logging
+from datetime import datetime
 
 import httpx
 from fastapi import APIRouter
@@ -36,12 +37,15 @@ async def pbs_jobs():
 
             jobs = []
             for snap in data:
+                ts = snap.get("backup-time", 0)
                 jobs.append({
+                    "store": PBS_DATASTORE,
                     "backup_type": snap.get("backup-type", ""),
                     "backup_id": snap.get("backup-id", ""),
-                    "backup_time": snap.get("backup-time", 0),
-                    "size": snap.get("size", 0),
-                    "verify_state": snap.get("verification", {}).get("state", "none"),
+                    "start_time": datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M") if ts else None,
+                    "size_bytes": snap.get("size", 0),
+                    "status": snap.get("verification", {}).get("state", "none"),
+                    "duration": None,
                 })
             return ok(jobs)
     except httpx.ConnectError:
@@ -85,12 +89,15 @@ async def pbs_summary():
 @router.get("/offsite")
 def offsite_sync_status():
     if not os.path.exists(OFFSITE_CONFIG_PATH):
-        return ok({"syncs": [], "note": f"Config file not found at {OFFSITE_CONFIG_PATH}"})
+        return ok(None)
 
     try:
         with open(OFFSITE_CONFIG_PATH, "r") as f:
             data = json.load(f)
-        return ok({"syncs": data})
+        # If the file is a list of sync records, return the most recent
+        if isinstance(data, list):
+            return ok(data[-1] if data else None)
+        return ok(data)
     except json.JSONDecodeError:
         return fail("Invalid JSON in offsite config file")
     except PermissionError:

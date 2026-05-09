@@ -27,6 +27,7 @@ def list_services():
                 "name": parts[0],
                 "load_state": parts[1],
                 "active_state": parts[2],
+                "status": parts[2],
                 "sub_state": parts[3],
                 "description": parts[4] if len(parts) > 4 else "",
             })

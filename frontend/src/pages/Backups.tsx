@@ -26,21 +26,25 @@ export default function Backups() {
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead className="bg-surface-container-highest/50 border-b border-outline-variant">
               <tr>
-                <th className="py-2 px-3 text-label-xs text-on-surface-variant tracking-wider">Store</th>
+                <th className="py-2 px-3 text-label-xs text-on-surface-variant tracking-wider">Store / ID</th>
                 <th className="py-2 px-3 text-label-xs text-on-surface-variant tracking-wider">Type</th>
                 <th className="py-2 px-3 text-label-xs text-on-surface-variant tracking-wider">Status</th>
                 <th className="py-2 px-3 text-label-xs text-on-surface-variant tracking-wider">Start</th>
-                <th className="py-2 px-3 text-label-xs text-on-surface-variant tracking-wider">Duration</th>
+                <th className="py-2 px-3 text-label-xs text-on-surface-variant tracking-wider">Size</th>
               </tr>
             </thead>
             <tbody className="text-data-md text-on-surface divide-y divide-outline-variant/30">
               {(jobs ?? []).map((job: any, i: number) => (
                 <tr key={i} className="hover:bg-surface-container-highest/50 transition-colors">
-                  <td className="py-3 px-3 font-bold text-primary">{job.store || '--'}</td>
+                  <td className="py-3 px-3 font-bold text-primary">{job.store || job.backup_id || '--'}</td>
                   <td className="py-3 px-3 text-on-surface-variant">{job.backup_type || '--'}</td>
                   <td className="py-3 px-3"><StatusBadge status={job.status || 'unknown'} /></td>
                   <td className="py-3 px-3 text-on-surface-variant font-mono">{job.start_time || '--'}</td>
-                  <td className="py-3 px-3 text-on-surface-variant">{job.duration || '--'}</td>
+                  <td className="py-3 px-3 text-on-surface-variant">
+                    {job.size_bytes != null && job.size_bytes > 0
+                      ? `${(job.size_bytes / (1024 ** 3)).toFixed(2)} GB`
+                      : '--'}
+                  </td>
                 </tr>
               ))}
               {(jobs ?? []).length === 0 && (

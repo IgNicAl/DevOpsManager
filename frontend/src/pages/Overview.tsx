@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { usePolling } from '../hooks/usePolling';
-import { getSystemOverview, getSystemCpu, getSystemNetwork } from '../services/api';
+import { getSystemOverview, getSystemCpu, getSystemNetwork, getSystemDisk } from '../services/api';
 import StatCard from '../components/ui/StatCard';
 
 function formatUptime(seconds: number): string {
@@ -14,10 +14,14 @@ export default function Overview() {
   const fetchOverview = useCallback(() => getSystemOverview(), []);
   const fetchCpu = useCallback(() => getSystemCpu(), []);
   const fetchNetwork = useCallback(() => getSystemNetwork(), []);
+  const fetchDisk = useCallback(() => getSystemDisk(), []);
 
   const { data: overview, error: overviewErr } = usePolling(fetchOverview, 5000);
   const { data: cpu } = usePolling(fetchCpu, 5000);
   const { data: network } = usePolling(fetchNetwork, 5000);
+  const { data: disks } = usePolling(fetchDisk, 30000);
+
+  const [selectedDiskIdx, setSelectedDiskIdx] = useState(0);
 
   if (overviewErr) {
     return (
@@ -32,7 +36,10 @@ export default function Overview() {
   }
 
   const ramPercent = overview?.ram_percent ?? 0;
-  const diskPercent = overview?.disk_percent ?? 0;
+
+  const currentDisk = (disks ?? [])[selectedDiskIdx] ?? null;
+  const diskPercent = currentDisk?.percent ?? 0;
+  const diskColor = diskPercent > 85 ? 'error' : diskPercent > 70 ? 'tertiary-container' : 'primary';
 
   return (
     <div className="flex flex-col gap-4">
@@ -55,15 +62,40 @@ export default function Overview() {
           percent={ramPercent}
           color={ramPercent > 80 ? 'error' : ramPercent > 60 ? 'tertiary-container' : 'primary'}
         />
-        <StatCard
-          label="Disk Usage (/)"
-          value={overview?.disk_used_gb != null ? (overview.disk_used_gb / 1024).toFixed(1) : '--'}
-          unit="TB"
-          subValue={`/ ${overview?.disk_total_gb != null ? (overview.disk_total_gb / 1024).toFixed(1) : '--'}TB`}
-          icon="hard_drive"
-          percent={diskPercent}
-          color={diskPercent > 85 ? 'error' : diskPercent > 70 ? 'tertiary-container' : 'primary'}
-        />
+        <div className="surface-card border border-outline-variant rounded flex flex-col relative overflow-hidden">
+          <div className="p-3 pb-6 flex-1 flex flex-col justify-between">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex flex-col gap-1">
+                <span className="text-label-xs text-on-surface-variant">Disk Usage</span>
+                {disks && disks.length > 1 && (
+                  <select
+                    value={selectedDiskIdx}
+                    onChange={(e) => setSelectedDiskIdx(Number(e.target.value))}
+                    className="text-label-xs text-on-surface bg-surface border border-outline-variant rounded px-1 py-0.5 cursor-pointer"
+                  >
+                    {disks.map((d: any, i: number) => (
+                      <option key={d.mountpoint} value={i}>{d.mountpoint}</option>
+                    ))}
+                  </select>
+                )}
+                {(!disks || disks.length <= 1) && (
+                  <span className="text-label-xs text-on-surface-variant">{currentDisk?.mountpoint ?? '/'}</span>
+                )}
+              </div>
+              <span className="material-symbols-outlined text-on-surface-variant text-sm">hard_drive</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <div className={`data-display text-${diskColor}`}>
+                {currentDisk?.used_gb?.toFixed(1) ?? '--'}
+                <span className="text-2xl text-on-surface-variant">GB</span>
+              </div>
+              <div className="text-data-md text-on-surface-variant">/ {currentDisk?.total_gb?.toFixed(1) ?? '--'}GB</div>
+            </div>
+          </div>
+          <div className="progress-track w-full absolute bottom-0 left-0">
+            <div className={`h-full bg-${diskColor} transition-all duration-500`} style={{ width: `${Math.min(diskPercent, 100)}%` }} />
+          </div>
+        </div>
         <div className="surface-card border border-outline-variant rounded flex flex-col relative overflow-hidden">
           <div className="p-3 pb-6 flex-1 flex flex-col justify-between">
             <div className="flex justify-between items-start mb-4">

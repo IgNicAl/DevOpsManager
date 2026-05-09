@@ -49,9 +49,9 @@ export default function Storage() {
               {(pools ?? []).map((p: any) => (
                 <tr key={p.name} className="hover:bg-surface-container-highest/50 transition-colors">
                   <td className="py-3 px-3 font-bold text-primary">{p.name}</td>
-                  <td className="py-3 px-3"><StatusBadge status={p.state || 'unknown'} /></td>
+                  <td className="py-3 px-3"><StatusBadge status={p.health || 'unknown'} /></td>
                   <td className="py-3 px-3 text-on-surface-variant">{p.size || '--'}</td>
-                  <td className="py-3 px-3 text-on-surface-variant">{p.alloc || '--'}</td>
+                  <td className="py-3 px-3 text-on-surface-variant">{p.allocated || '--'}</td>
                   <td className="py-3 px-3 text-on-surface-variant">{p.free || '--'}</td>
                 </tr>
               ))}
