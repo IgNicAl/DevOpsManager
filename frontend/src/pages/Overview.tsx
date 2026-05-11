@@ -10,6 +10,7 @@ import {
   getSystemNetwork,
   getSystemCpu,
   getSystemMemory,
+  getSystemDisk,
 } from '../services/api';
 import StatCard from '../components/ui/StatCard';
 import MetricChart from '../components/charts/MetricChart';
@@ -34,6 +35,7 @@ export default function Overview() {
   const fetchNetwork = useCallback(() => getSystemNetwork(), []);
   const fetchCpu = useCallback(() => getSystemCpu(), []);
   const fetchMem = useCallback(() => getSystemMemory(), []);
+  const fetchDisk = useCallback(() => getSystemDisk(), []);
 
   const { data: overview, error: overviewErr } = usePolling(fetchOverview, 5000);
   const { data: history } = usePolling(fetchHistory, 5000);
@@ -44,6 +46,7 @@ export default function Overview() {
   const { data: network } = usePolling(fetchNetwork, 5000);
   const { data: cpuDetails } = usePolling(fetchCpu, 5000);
   const { data: memDetails } = usePolling(fetchMem, 10000);
+  const { data: diskPartitions } = usePolling(fetchDisk, 15000);
 
   const [expanded, setExpanded] = useState<ExpandedCard>(null);
   const toggle = (k: ExpandedCard) => setExpanded((cur) => (cur === k ? null : k));
@@ -153,8 +156,36 @@ export default function Overview() {
           onClick={() => toggle('disk')}
           expanded={expanded === 'disk'}
         >
-          <div className="text-data-md text-on-surface-variant">
-            For per-partition details and SMART, open the <button onClick={() => navigate('/storage')} className="text-primary underline">Storage</button> tab.
+          <div className="space-y-2">
+            {Array.isArray(diskPartitions) && diskPartitions.length > 0 ? (
+              <>
+                <table className="w-full text-label-xs">
+                  <tbody className="divide-y divide-outline-variant/20">
+                    {diskPartitions.map((p: any) => {
+                      const c = p.percent > 85 ? 'error' : p.percent > 70 ? 'tertiary-container' : 'primary';
+                      return (
+                        <tr key={`${p.device}-${p.mountpoint}`}>
+                          <td className="py-1 text-on-surface font-bold w-[72px]">{p.mountpoint}</td>
+                          <td className="py-1 px-2 w-full">
+                            <div className="progress-track w-full">
+                              <div className={`h-full bg-${c}`} style={{ width: `${Math.min(p.percent, 100)}%` }} />
+                            </div>
+                          </td>
+                          <td className={`py-1 text-right text-${c} tabular-nums whitespace-nowrap`}>{p.percent}%</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <div className="text-label-xs text-outline pt-0.5">
+                  SMART → <button onClick={() => navigate('/storage')} className="text-primary underline">Storage</button>
+                </div>
+              </>
+            ) : (
+              <div className="text-data-md text-on-surface-variant">
+                For per-partition details and SMART, open the <button onClick={() => navigate('/storage')} className="text-primary underline">Storage</button> tab.
+              </div>
+            )}
           </div>
         </StatCard>
 

@@ -218,6 +218,37 @@ export const deleteVlanMember = (id: string) =>
 export const networkPingUrl = () => `${API_BASE}/api/network/ping`;
 export const networkTracerouteUrl = () => `${API_BASE}/api/network/traceroute`;
 
+// Network Map (Device Discovery)
+export interface NetworkDevice {
+  ip: string;
+  mac: string;
+  vendor: string;
+  type: 'router' | 'host';
+  interface: string;
+  latency_ms: number | null;
+}
+export interface NetworkSubnet {
+  network: string;
+  interface: string;
+  gateway: string | null;
+}
+export interface NetworkScanInfo {
+  method: 'passive' | 'ping_sweep';
+  duration_ms: number;
+  hosts_scanned: number;
+  hosts_found: number;
+  timestamp: number;
+}
+export interface NetworkMap {
+  devices: NetworkDevice[];
+  subnets: NetworkSubnet[];
+  scan_info: NetworkScanInfo;
+}
+export const getNetworkMap = () =>
+  api.get<ApiResponse<NetworkMap>>('/api/network/map');
+export const scanNetworkMap = () =>
+  api.post<ApiResponse<NetworkMap>>('/api/network/map/scan', { confirm: true }, { timeout: 120000 });
+
 export const getTailscalePeers = () => api.get<ApiResponse<any[]>>('/api/network/tailscale/peers');
 export const getCloudflareTunnels = () => api.get<ApiResponse<any[]>>('/api/network/cloudflare/tunnels');
 

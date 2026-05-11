@@ -22,6 +22,50 @@ _SKIP_FS = {
 router = APIRouter(prefix="/api/system", tags=["System"])
 
 
+def _get_root_disk_stats() -> dict:
+    """Read /proc/1/mounts to find the real root partition and return its stats."""
+    best = None
+    try:
+        with open(HOST_PROC_MOUNTS) as f:
+            for line in f:
+                parts = line.split()
+                if len(parts) < 3:
+                    continue
+                device, mountpoint, fstype = parts[0], parts[1], parts[2]
+                if fstype in _SKIP_FS or not device.startswith("/dev/"):
+                    continue
+                host_path = f"{HOST_ROOT}{mountpoint}"
+                try:
+                    st = os.statvfs(host_path)
+                    total = st.f_blocks * st.f_frsize
+                    if total == 0:
+                        continue
+                    free = st.f_bavail * st.f_frsize
+                    used = total - free
+                    entry = {
+                        "mountpoint": mountpoint,
+                        "total": total,
+                        "used": used,
+                        "free": free,
+                    }
+                    # Prefer "/" mountpoint; otherwise pick the largest partition
+                    if mountpoint == "/":
+                        return entry
+                    if best is None or total > best["total"]:
+                        best = entry
+                except OSError:
+                    continue
+    except OSError:
+        pass
+    if best:
+        return best
+    # Fallback: statvfs on HOST_ROOT (may be inaccurate inside containers)
+    st = os.statvfs(HOST_ROOT)
+    total = st.f_blocks * st.f_frsize
+    free = st.f_bavail * st.f_frsize
+    return {"mountpoint": "/", "total": total, "used": total - free, "free": free}
+
+
 @router.get("/overview")
 def system_overview():
     try:
@@ -31,10 +75,9 @@ def system_overview():
         uptime_seconds = time.time() - boot_time
         uname = platform.uname()
 
-        st = os.statvfs(HOST_ROOT)
-        disk_total = st.f_blocks * st.f_frsize
-        disk_free = st.f_bavail * st.f_frsize
-        disk_used = disk_total - disk_free
+        disk = _get_root_disk_stats()
+        disk_total = disk["total"]
+        disk_used = disk["used"]
 
         return ok({
             "cpu_percent": cpu_percent,
@@ -99,10 +142,28 @@ def memory_details():
         return fail(str(exc))
 
 
+def _preferred_mountpoint(a: str, b: str) -> str:
+    """Pick the more canonical mountpoint between two candidates."""
+    priority = ["/", "/home", "/var", "/boot", "/boot/efi"]
+    ai = priority.index(a) if a in priority else len(priority)
+    bi = priority.index(b) if b in priority else len(priority)
+    if ai != bi:
+        return a if ai < bi else b
+    return a if len(a) <= len(b) else b
+
+
+def _short_device(device: str) -> str:
+    """Shorten verbose mapper/LUKS device names for display."""
+    name = device.rsplit("/", 1)[-1]
+    if name.startswith("luks-"):
+        return f"luks-{name[5:13]}…"
+    return name
+
+
 @router.get("/disk")
 def disk_partitions():
     try:
-        disks = []
+        raw: dict[str, dict] = {}
         seen = set()
 
         with open(HOST_PROC_MOUNTS) as f:
@@ -127,18 +188,28 @@ def disk_partitions():
                     used = total - free
                     if total == 0:
                         continue
-                    disks.append({
+
+                    # Deduplicate: same device + same total = same physical disk
+                    dedup_key = (device, total)
+                    if dedup_key in raw:
+                        old_mp = raw[dedup_key]["mountpoint"]
+                        raw[dedup_key]["mountpoint"] = _preferred_mountpoint(old_mp, mountpoint)
+                        continue
+
+                    raw[dedup_key] = {
                         "device": device,
+                        "device_short": _short_device(device),
                         "mountpoint": mountpoint,
                         "fstype": fstype,
                         "total_gb": round(total / (1024 ** 3), 2),
                         "used_gb": round(used / (1024 ** 3), 2),
                         "free_gb": round(free / (1024 ** 3), 2),
                         "percent": round(used / total * 100, 1),
-                    })
+                    }
                 except OSError:
                     continue
 
+        disks = sorted(raw.values(), key=lambda d: d["mountpoint"])
         return ok(disks)
     except Exception as exc:
         return fail(str(exc))

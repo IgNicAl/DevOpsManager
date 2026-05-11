@@ -22,8 +22,40 @@ from utils.validators import (
     validate_vlan_id,
 )
 from utils import vlan_members
+from utils.network_scanner import build_network_map
 
 router = APIRouter(prefix="/api/network", tags=["Network"])
+
+
+# ---------- Network Map (Device Discovery) ----------
+
+@router.get("/map")
+async def network_map_passive():
+    """Return the current ARP cache and gateway info (no active probing)."""
+    try:
+        result = await build_network_map(active_scan=False)
+        return ok(result)
+    except Exception as exc:
+        return fail(str(exc))
+
+
+class ScanBody(BaseModel):
+    confirm: bool = Field(False, description="Confirm active network scan")
+
+
+@router.post("/map/scan")
+async def network_map_scan(body: ScanBody):
+    """Run a ping sweep across local subnets, then return the full network map."""
+    if not body.confirm:
+        raise HTTPException(
+            status_code=400,
+            detail=fail("Active scan requires confirmation: set confirm=true"),
+        )
+    try:
+        result = await build_network_map(active_scan=True)
+        return ok(result)
+    except Exception as exc:
+        return fail(str(exc))
 
 
 # ---------- Interfaces ----------

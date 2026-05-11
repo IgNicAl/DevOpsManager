@@ -7,9 +7,12 @@ import {
   getNetworkVlans,
   getTailscalePeers,
   getCloudflareTunnels,
+  getNetworkMap,
+  scanNetworkMap,
   networkPingUrl,
   networkTracerouteUrl,
 } from '../services/api';
+import type { NetworkMap, NetworkDevice } from '../services/api';
 import StatusBadge from '../components/ui/StatusBadge';
 import VlanKanban from './Network/VlanKanban';
 
@@ -20,6 +23,7 @@ export default function Network() {
   const fetchVlans = useCallback(() => getNetworkVlans(), []);
   const fetchPeers = useCallback(() => getTailscalePeers(), []);
   const fetchTunnels = useCallback(() => getCloudflareTunnels(), []);
+  const fetchMap = useCallback(() => getNetworkMap(), []);
 
   const { data: interfaces } = usePolling(fetchInterfaces, 15000);
   const { data: routes } = usePolling(fetchRoutes, 30000);
@@ -27,6 +31,7 @@ export default function Network() {
   const { data: vlans } = usePolling(fetchVlans, 30000);
   const { data: peers } = usePolling(fetchPeers, 15000);
   const { data: tunnels } = usePolling(fetchTunnels, 30000);
+  const { data: networkMap, refetch: refetchMap } = usePolling(fetchMap, 30000);
 
   return (
     <div className="flex flex-col gap-4 flex-1">
@@ -37,6 +42,7 @@ export default function Network() {
 
       <div className="flex flex-wrap gap-4">
         {[
+          { label: 'Devices', count: networkMap?.devices?.length ?? 0 },
           { label: 'Interfaces', count: (interfaces ?? []).length },
           { label: 'Routes', count: (routes ?? []).length },
           { label: 'Connections', count: (conns ?? []).length },
@@ -50,6 +56,8 @@ export default function Network() {
           </div>
         ))}
       </div>
+
+      <NetworkMapSection data={networkMap} onRefresh={refetchMap} />
 
       <Section title="Interfaces">
         <Table headers={['Name', 'IPv4', 'MAC', 'Status', 'Speed', 'MTU']} empty="No interfaces" data={interfaces ?? []}>
@@ -128,6 +136,118 @@ export default function Network() {
       </Section>
 
     </div>
+  );
+}
+
+function NetworkMapSection({ data, onRefresh }: { data: NetworkMap | null; onRefresh: () => void }) {
+  const [scanning, setScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<NetworkMap | null>(null);
+
+  const displayData = scanResult ?? data;
+  const devices = displayData?.devices ?? [];
+  const scanInfo = displayData?.scan_info;
+
+  const runScan = async () => {
+    setScanning(true);
+    try {
+      const res = await scanNetworkMap();
+      if (res.data.success && res.data.data) {
+        setScanResult(res.data.data);
+      }
+    } catch {
+      // scan failed — passive data remains
+    } finally {
+      setScanning(false);
+      onRefresh();
+    }
+  };
+
+  return (
+    <Section
+      title="Device Discovery"
+      action={
+        <button
+          onClick={runScan}
+          disabled={scanning}
+          className="flex items-center gap-2 px-3 py-1 text-data-md bg-primary-container text-on-primary-container hover:bg-primary disabled:opacity-50 transition-colors"
+        >
+          {scanning ? (
+            <>
+              <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Scanning…
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-sm">radar</span>
+              Active Scan
+            </>
+          )}
+        </button>
+      }
+    >
+      {scanInfo && (
+        <div className="px-4 py-1.5 border-b border-outline-variant bg-surface-container-low flex items-center gap-4 text-data-md text-on-surface-variant">
+          <span className="flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-sm text-primary">info</span>
+            {scanInfo.method === 'ping_sweep' ? 'Ping Sweep' : 'Passive (ARP Cache)'}
+          </span>
+          <span>·</span>
+          <span>{scanInfo.hosts_found} devices</span>
+          {scanInfo.method === 'ping_sweep' && (
+            <>
+              <span>·</span>
+              <span>{scanInfo.hosts_scanned} scanned</span>
+              <span>·</span>
+              <span>{(scanInfo.duration_ms / 1000).toFixed(1)}s</span>
+            </>
+          )}
+        </div>
+      )}
+
+      {scanning && devices.length === 0 ? (
+        <div className="p-8 flex flex-col items-center gap-3 text-on-surface-variant">
+          <svg className="animate-spin h-8 w-8 text-primary" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          <span className="text-data-md">Scanning network — this may take 5–15 seconds…</span>
+        </div>
+      ) : (
+        <Table
+          headers={['Type', 'IP Address', 'MAC Address', 'Vendor', 'Interface', 'Latency']}
+          empty="No devices discovered — run an Active Scan"
+          data={devices}
+        >
+          {(device: NetworkDevice, i: number) => (
+            <tr key={`${device.ip}-${i}`} className="hover:bg-surface-container-highest/50 transition-colors">
+              <td className="py-3 px-3">
+                {device.type === 'router' ? (
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border text-label-xs tracking-wider rounded-sm bg-primary/10 border-primary text-primary">
+                    <span className="material-symbols-outlined text-xs">router</span>
+                    Router
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border text-label-xs tracking-wider rounded-sm border-outline text-outline">
+                    <span className="material-symbols-outlined text-xs">devices</span>
+                    Host
+                  </span>
+                )}
+              </td>
+              <td className="py-3 px-3 font-mono font-bold text-primary">{device.ip}</td>
+              <td className="py-3 px-3 font-mono text-on-surface-variant">{device.mac}</td>
+              <td className="py-3 px-3 text-on-surface-variant">{device.vendor === 'Unknown' ? <span className="text-outline">—</span> : device.vendor}</td>
+              <td className="py-3 px-3 text-on-surface-variant">{device.interface}</td>
+              <td className="py-3 px-3 font-mono text-on-surface-variant">
+                {device.latency_ms != null ? `${device.latency_ms} ms` : <span className="text-outline">—</span>}
+              </td>
+            </tr>
+          )}
+        </Table>
+      )}
+    </Section>
   );
 }
 
