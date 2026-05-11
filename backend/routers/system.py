@@ -1,10 +1,12 @@
 import platform
 import time
+from datetime import datetime
 
 import psutil
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from models.envelope import ok, fail
+from utils.metrics_store import metrics_store
 
 router = APIRouter(prefix="/api/system", tags=["System"])
 
@@ -124,3 +126,66 @@ def network_io():
         return ok(interfaces)
     except Exception as exc:
         return fail(str(exc))
+
+
+@router.get("/history")
+def system_history():
+    return ok(metrics_store.get_global())
+
+
+@router.get("/temperature")
+def system_temperature():
+    try:
+        sensors = psutil.sensors_temperatures()
+    except (AttributeError, NotImplementedError):
+        return fail("temperature sensors not available")
+    if not sensors:
+        return fail("temperature sensors not available")
+    grouped = {}
+    for chip, entries in sensors.items():
+        grouped[chip] = [
+            {
+                "label": e.label or chip,
+                "current": e.current,
+                "high": e.high,
+                "critical": e.critical,
+            }
+            for e in entries
+        ]
+    return ok(grouped)
+
+
+@router.get("/top-processes")
+def top_processes(by: str = Query("cpu", pattern="^(cpu|memory)$"), limit: int = Query(5, ge=1, le=50)):
+    try:
+        for proc in psutil.process_iter(["pid", "name", "username", "cpu_percent", "memory_percent"]):
+            try:
+                proc.cpu_percent(interval=None)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        time.sleep(0.3)
+
+        processes = []
+        for proc in psutil.process_iter(["pid", "name", "username", "memory_percent"]):
+            try:
+                cpu = proc.cpu_percent(interval=None)
+                info = proc.info
+                info["cpu_percent"] = cpu
+                processes.append(info)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+
+        key = "cpu_percent" if by == "cpu" else "memory_percent"
+        processes.sort(key=lambda p: p.get(key) or 0.0, reverse=True)
+        return ok(processes[:limit])
+    except Exception as exc:
+        return fail(str(exc))
+
+
+@router.get("/load")
+def system_load():
+    return ok({
+        "high_load": metrics_store.high_load(threshold=80.0, window=6),
+        "samples_in_window": min(len(metrics_store.cpu), 6),
+        "now": datetime.utcnow().isoformat() + "Z",
+    })

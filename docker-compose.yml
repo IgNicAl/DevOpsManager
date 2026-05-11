@@ -13,11 +13,14 @@ services:
     volumes:
       - /run/user/1000/podman/podman.sock:/var/run/docker.sock:rw
       - /var/log:/host-logs:ro
+      - devops-data:/var/lib/devops-manager
     environment:
       - PBS_API_URL=${PBS_API_URL:-}
       - PBS_API_TOKEN=${PBS_API_TOKEN:-}
       - PBS_DATASTORE=${PBS_DATASTORE:-}
       - TRAEFIK_ACME_PATH=${TRAEFIK_ACME_PATH:-/etc/traefik/acme.json}
+      - BACKEND_DATA_DIR=${BACKEND_DATA_DIR:-/var/lib/devops-manager}
+      - TERMINAL_TOKEN=${TERMINAL_TOKEN:-}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -44,3 +47,6 @@ services:
 networks:
   devops-net:
     driver: bridge
+
+volumes:
+  devops-data:

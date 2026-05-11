@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from models.envelope import ok, fail
@@ -10,8 +12,25 @@ router = APIRouter(prefix="/api/services", tags=["Services"])
 ALLOWED_ACTIONS = {"start", "stop", "restart", "enable", "disable"}
 
 
+def _parse_systemd_timestamp(s: str) -> int:
+    """Parse systemd timestamp string into epoch seconds (0 if invalid/empty)."""
+    if not s or s in ("0", "n/a"):
+        return 0
+    # Examples: "Mon 2024-01-01 10:00:00 UTC" or "Mon 2024-01-01 10:00:00 BRT"
+    parts = s.split(" ", 1)
+    if len(parts) < 2:
+        return 0
+    try:
+        # Drop weekday and trailing tz token; rely on local time fallback.
+        body = parts[1].rsplit(" ", 1)[0]
+        dt = datetime.strptime(body, "%Y-%m-%d %H:%M:%S")
+        return int(dt.replace(tzinfo=timezone.utc).timestamp())
+    except ValueError:
+        return 0
+
+
 @router.get("")
-def list_services():
+def list_services(state: str = Query("all", pattern="^(all|running|failed|inactive)$")):
     success, output = run_cmd([
         "systemctl", "list-units", "--type=service", "--all", "--no-pager",
         "--plain", "--no-legend",
@@ -20,17 +39,37 @@ def list_services():
         return fail(output)
 
     services = []
+    now_epoch = int(datetime.now(timezone.utc).timestamp())
     for line in output.splitlines():
         parts = line.split(None, 4)
-        if len(parts) >= 4:
-            services.append({
-                "name": parts[0],
-                "load_state": parts[1],
-                "active_state": parts[2],
-                "status": parts[2],
-                "sub_state": parts[3],
-                "description": parts[4] if len(parts) > 4 else "",
-            })
+        if len(parts) < 4:
+            continue
+        active_state = parts[2]
+        sub_state = parts[3]
+        if state == "running" and active_state != "active":
+            continue
+        if state == "failed" and active_state != "failed":
+            continue
+        if state == "inactive" and active_state not in ("inactive", "dead"):
+            continue
+        # uptime via show
+        uptime_sec = 0
+        if active_state == "active":
+            ok2, out2 = run_cmd([
+                "systemctl", "show", parts[0], "-p", "ActiveEnterTimestamp", "--value", "--no-pager"
+            ], timeout=5)
+            if ok2:
+                started = _parse_systemd_timestamp(out2)
+                if started:
+                    uptime_sec = max(0, now_epoch - started)
+        services.append({
+            "name": parts[0],
+            "load_state": parts[1],
+            "active_state": active_state,
+            "sub_state": sub_state,
+            "description": parts[4] if len(parts) > 4 else "",
+            "uptime_sec": uptime_sec,
+        })
     return ok(services)
 
 
@@ -49,6 +88,16 @@ def get_service(name: str):
             key, _, value = line.partition("=")
             props[key] = value
 
+    started_epoch = _parse_systemd_timestamp(props.get("ActiveEnterTimestamp", ""))
+    uptime_sec = 0
+    if started_epoch and props.get("ActiveState") == "active":
+        uptime_sec = max(0, int(datetime.now(timezone.utc).timestamp()) - started_epoch)
+
+    journal_tail: list[str] = []
+    ok2, out2 = run_cmd(["journalctl", "-u", name, "-n", "20", "--no-pager"], timeout=10)
+    if ok2 and out2:
+        journal_tail = out2.splitlines()
+
     return ok({
         "name": name,
         "description": props.get("Description", ""),
@@ -58,6 +107,8 @@ def get_service(name: str):
         "main_pid": props.get("MainPID", ""),
         "memory_current": props.get("MemoryCurrent", ""),
         "active_enter_timestamp": props.get("ActiveEnterTimestamp", ""),
+        "uptime_sec": uptime_sec,
+        "journal_tail": journal_tail,
     })
 
 

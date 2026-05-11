@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Sidebar from './components/ui/Sidebar';
+import { ToastProvider } from './components/ui/Toast';
 import Overview from './pages/Overview';
 import Storage from './pages/Storage';
 import Services from './pages/Services';
@@ -10,6 +11,11 @@ import Processes from './pages/Processes';
 import Backups from './pages/Backups';
 import Network from './pages/Network';
 import Logs from './pages/Logs';
+import Dns from './pages/Dns';
+import Users from './pages/Users';
+import Cron from './pages/Cron';
+import Alerts from './pages/Alerts';
+import Terminal from './pages/Terminal';
 
 function AppLayout() {
   const location = useLocation();
@@ -25,6 +31,11 @@ function AppLayout() {
     '/backups': 'Backups',
     '/network': 'Network',
     '/logs': 'Logs',
+    '/dns': 'Domains & DNS',
+    '/users': 'Users',
+    '/cron': 'Cron',
+    '/alerts': 'Alerts',
+    '/terminal': 'Terminal',
   };
 
   const pageTitle = PAGE_TITLES[location.pathname] || 'DevOps Manager';
@@ -68,6 +79,11 @@ function AppLayout() {
             <Route path="/backups" element={<Backups />} />
             <Route path="/network" element={<Network />} />
             <Route path="/logs" element={<Logs />} />
+            <Route path="/dns" element={<Dns />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/cron" element={<Cron />} />
+            <Route path="/alerts" element={<Alerts />} />
+            <Route path="/terminal" element={<Terminal />} />
           </Routes>
         </main>
       </div>
@@ -77,8 +93,10 @@ function AppLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AppLayout />
-    </BrowserRouter>
+    <ToastProvider>
+      <BrowserRouter>
+        <AppLayout />
+      </BrowserRouter>
+    </ToastProvider>
   );
 }

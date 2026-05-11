@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getHealth } from '../../services/api';
+import { useActiveAlerts } from '../../hooks/useActiveAlerts';
+import AlertBadge from './AlertBadge';
 
 interface NavItem {
   path: string;
@@ -10,19 +12,25 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { path: '/', label: 'Overview', icon: 'dashboard' },
-  { path: '/storage', label: 'Storage', icon: 'storage' },
+  { path: '/processes', label: 'Processes', icon: 'memory' },
   { path: '/services', label: 'Services', icon: 'settings_input_component' },
+  { path: '/docker', label: 'Docker', icon: 'deployed_code' },
   { path: '/kubernetes', label: 'Kubernetes', icon: 'hub' },
   { path: '/gitops', label: 'GitOps', icon: 'sync' },
-  { path: '/docker', label: 'Docker', icon: 'deployed_code' },
-  { path: '/processes', label: 'Processes', icon: 'memory' },
-  { path: '/backups', label: 'Backups', icon: 'backup' },
+  { path: '/storage', label: 'Storage', icon: 'storage' },
   { path: '/network', label: 'Network', icon: 'lan' },
-  { path: '/logs', label: 'Logs', icon: 'terminal' },
+  { path: '/dns', label: 'Domains/DNS', icon: 'dns' },
+  { path: '/users', label: 'Users', icon: 'group' },
+  { path: '/cron', label: 'Cron', icon: 'schedule' },
+  { path: '/terminal', label: 'Terminal', icon: 'terminal' },
+  { path: '/logs', label: 'Logs', icon: 'description' },
+  { path: '/backups', label: 'Backups', icon: 'backup' },
+  { path: '/alerts', label: 'Alerts', icon: 'notifications' },
 ];
 
 export default function Sidebar() {
   const [isHealthy, setIsHealthy] = useState(false);
+  const alertCount = useActiveAlerts(10000);
 
   useEffect(() => {
     const check = async () => {
@@ -77,7 +85,8 @@ export default function Sidebar() {
             }
           >
             <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
-            {item.label}
+            <span className="flex-1">{item.label}</span>
+            {item.path === '/alerts' && <AlertBadge count={alertCount} />}
           </NavLink>
         ))}
       </div>

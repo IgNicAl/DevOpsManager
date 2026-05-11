@@ -7,3 +7,6 @@ python-multipart
 pydantic
 pytest
 pytest-asyncio
+sse-starlette
+croniter
+cryptography

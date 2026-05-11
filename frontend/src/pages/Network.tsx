@@ -1,28 +1,46 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePolling } from '../hooks/usePolling';
-import { getTraefikRoutes, getCertificates, getTailscalePeers, getCloudflareTunnels } from '../services/api';
+import {
+  getNetworkInterfaces,
+  getNetworkRoutes,
+  getNetworkConnections,
+  getNetworkVlans,
+  getTailscalePeers,
+  getCloudflareTunnels,
+  networkPingUrl,
+  networkTracerouteUrl,
+} from '../services/api';
 import StatusBadge from '../components/ui/StatusBadge';
+import VlanKanban from './Network/VlanKanban';
 
 export default function Network() {
+  const fetchInterfaces = useCallback(() => getNetworkInterfaces(), []);
+  const fetchRoutes = useCallback(() => getNetworkRoutes(), []);
+  const fetchConns = useCallback(() => getNetworkConnections(), []);
+  const fetchVlans = useCallback(() => getNetworkVlans(), []);
   const fetchPeers = useCallback(() => getTailscalePeers(), []);
-  const fetchCerts = useCallback(() => getCertificates(), []);
-  const fetchRoutes = useCallback(() => getTraefikRoutes(), []);
   const fetchTunnels = useCallback(() => getCloudflareTunnels(), []);
 
-  const { data: peers } = usePolling(fetchPeers, 15000);
-  const { data: certs } = usePolling(fetchCerts, 60000);
+  const { data: interfaces } = usePolling(fetchInterfaces, 15000);
   const { data: routes } = usePolling(fetchRoutes, 30000);
+  const { data: conns } = usePolling(fetchConns, 15000);
+  const { data: vlans } = usePolling(fetchVlans, 30000);
+  const { data: peers } = usePolling(fetchPeers, 15000);
   const { data: tunnels } = usePolling(fetchTunnels, 30000);
 
   return (
     <div className="flex flex-col gap-4 flex-1">
-      <h2 className="text-headline-lg text-on-surface mb-1">Network</h2>
-      <p className="text-body-md text-on-surface-variant">Traefik, TLS certs, Tailscale, Cloudflare.</p>
+      <div>
+        <h2 className="text-headline-lg text-on-surface mb-1">Network</h2>
+        <p className="text-body-md text-on-surface-variant">Interfaces, routes, connections, VLANs, Tailscale, Cloudflare.</p>
+      </div>
 
       <div className="flex flex-wrap gap-4">
         {[
+          { label: 'Interfaces', count: (interfaces ?? []).length },
           { label: 'Routes', count: (routes ?? []).length },
-          { label: 'Certs', count: (certs ?? []).length },
+          { label: 'Connections', count: (conns ?? []).length },
+          { label: 'VLANs', count: (vlans ?? []).length },
           { label: 'Peers', count: (peers ?? []).length },
           { label: 'Tunnels', count: (tunnels ?? []).length },
         ].map((s) => (
@@ -33,7 +51,56 @@ export default function Network() {
         ))}
       </div>
 
-      {/* Tailscale */}
+      <Section title="Interfaces">
+        <Table headers={['Name', 'IPv4', 'MAC', 'Status', 'Speed', 'MTU']} empty="No interfaces" data={interfaces ?? []}>
+          {(iface: any) => (
+            <tr key={iface.name} className="hover:bg-surface-container-highest/50 transition-colors">
+              <td className="py-3 px-3 font-bold text-primary">{iface.name}</td>
+              <td className="py-3 px-3 font-mono text-on-surface-variant">{(iface.ipv4 || []).join(', ') || '--'}</td>
+              <td className="py-3 px-3 font-mono text-on-surface-variant">{iface.mac || '--'}</td>
+              <td className="py-3 px-3"><StatusBadge status={iface.is_up ? 'Active' : 'Inactive'} /></td>
+              <td className="py-3 px-3 text-on-surface-variant">{iface.speed_mbps ? `${iface.speed_mbps} Mbps` : '--'}</td>
+              <td className="py-3 px-3 text-on-surface-variant">{iface.mtu || '--'}</td>
+            </tr>
+          )}
+        </Table>
+      </Section>
+
+      <Section title="Routes">
+        <Table headers={['Destination', 'Gateway', 'Device', 'Proto', 'Scope']} empty="No routes" data={routes ?? []}>
+          {(r: any, i: number) => (
+            <tr key={i} className="hover:bg-surface-container-highest/50 transition-colors">
+              <td className="py-3 px-3 font-mono text-primary">{r.dst || '--'}</td>
+              <td className="py-3 px-3 font-mono text-on-surface-variant">{r.gateway || '--'}</td>
+              <td className="py-3 px-3 text-on-surface-variant">{r.dev || '--'}</td>
+              <td className="py-3 px-3 text-on-surface-variant">{r.protocol || r.proto || '--'}</td>
+              <td className="py-3 px-3 text-on-surface-variant">{r.scope || '--'}</td>
+            </tr>
+          )}
+        </Table>
+      </Section>
+
+      <VlanKanban />
+
+      <Section title="Open Connections (ss)">
+        <Table headers={['Proto', 'State', 'Local', 'Remote', 'Process']} empty="No connections" data={conns ?? []}>
+          {(c: any, i: number) => (
+            <tr key={i} className="hover:bg-surface-container-highest/50 transition-colors">
+              <td className="py-3 px-3 font-mono text-primary">{c.proto}</td>
+              <td className="py-3 px-3"><StatusBadge status={c.state} /></td>
+              <td className="py-3 px-3 font-mono text-on-surface-variant">{c.local_address}</td>
+              <td className="py-3 px-3 font-mono text-on-surface-variant">{c.remote_address}</td>
+              <td className="py-3 px-3 text-on-surface-variant">{c.process ? `${c.process.name} (${c.process.pid})` : '--'}</td>
+            </tr>
+          )}
+        </Table>
+      </Section>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <NetTool title="Ping" url={networkPingUrl()} placeholder="example.com" buildBody={(host) => ({ host, count: 4 })} />
+        <NetTool title="Traceroute" url={networkTracerouteUrl()} placeholder="example.com" buildBody={(host) => ({ host, max_hops: 20 })} />
+      </div>
+
       <Section title="Tailscale Peers">
         <Table headers={['Name', 'IP', 'OS', 'Status']} empty="No peers" data={peers ?? []}>
           {(peer: any, i: number) => (
@@ -47,27 +114,124 @@ export default function Network() {
         </Table>
       </Section>
 
-      {/* Certs */}
-      <Section title="TLS Certificates">
-        <Table headers={['Domain', 'Issuer', 'Expiry']} empty="No certs" data={certs ?? []}>
-          {(cert: any, i: number) => (
-            <tr key={i} className="hover:bg-surface-container-highest/50 transition-colors">
-              <td className="py-3 px-3 font-bold text-primary">{cert.domain || '--'}</td>
-              <td className="py-3 px-3 text-on-surface-variant">{cert.issuer || '--'}</td>
-              <td className="py-3 px-3 font-mono text-on-surface-variant">{cert.not_after || '--'}</td>
+      <Section title="Cloudflare Tunnels">
+        <Table headers={['Name', 'ID', 'Status', 'Connections']} empty="No tunnels" data={tunnels ?? []}>
+          {(t: any) => (
+            <tr key={t.id} className="hover:bg-surface-container-highest/50 transition-colors">
+              <td className="py-3 px-3 font-bold text-primary">{t.name}</td>
+              <td className="py-3 px-3 font-mono text-outline">{t.id}</td>
+              <td className="py-3 px-3"><StatusBadge status={t.status} /></td>
+              <td className="py-3 px-3 text-on-surface-variant">{t.connections_count}</td>
             </tr>
           )}
         </Table>
       </Section>
+
     </div>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function NetTool({ title, url, placeholder, buildBody }: {
+  title: string;
+  url: string;
+  placeholder: string;
+  buildBody: (host: string) => Record<string, unknown>;
+}) {
+  const [host, setHost] = useState('');
+  const [running, setRunning] = useState(false);
+  const [lines, setLines] = useState<string[]>([]);
+  const esRef = useRef<EventSource | null>(null);
+
+  useEffect(() => () => { esRef.current?.close(); }, []);
+
+  const start = async () => {
+    if (!host || running) return;
+    setRunning(true);
+    setLines([`> ${title.toLowerCase()} ${host}`]);
+    try {
+      // SSE doesn't support POST natively; fetch with eventstream parser
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+        body: JSON.stringify(buildBody(host)),
+      });
+      if (!resp.body) {
+        setLines((l) => [...l, '(no stream body)']);
+        setRunning(false);
+        return;
+      }
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buf = '';
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const events = buf.split('\n\n');
+        buf = events.pop() ?? '';
+        for (const ev of events) {
+          let event = 'message';
+          let data = '';
+          for (const ln of ev.split('\n')) {
+            if (ln.startsWith('event:')) event = ln.slice(6).trim();
+            else if (ln.startsWith('data:')) data += ln.slice(5).trim();
+          }
+          if (!data) continue;
+          try {
+            const parsed = JSON.parse(data);
+            if (event === 'line' && parsed.line != null) {
+              setLines((l) => [...l, parsed.line as string]);
+            } else if (event === 'done') {
+              setLines((l) => [...l, `(exit ${parsed.return_code ?? 0})`]);
+            }
+          } catch {
+            setLines((l) => [...l, data]);
+          }
+        }
+      }
+    } catch (err: any) {
+      setLines((l) => [...l, `error: ${err?.message || err}`]);
+    }
+    setRunning(false);
+  };
+
   return (
     <div className="surface-card border border-outline-variant rounded overflow-hidden">
-      <div className="px-4 py-2 border-b border-outline-variant bg-surface-container-highest">
+      <div className="px-4 py-2 border-b border-outline-variant bg-surface-container-highest flex items-center gap-2">
+        <span className="material-symbols-outlined text-on-surface-variant text-sm">network_check</span>
         <span className="text-label-xs text-on-surface-variant tracking-wider">{title}</span>
+      </div>
+      <div className="p-4 flex flex-col gap-3">
+        <div className="flex gap-2">
+          <input
+            className="flex-1 bg-surface-container-low border border-outline-variant text-on-surface text-data-md py-1.5 px-3 terminal-focus"
+            placeholder={placeholder}
+            value={host}
+            onChange={(e) => setHost(e.target.value)}
+            disabled={running}
+          />
+          <button
+            onClick={start}
+            disabled={!host || running}
+            className="px-4 py-1.5 text-data-md bg-primary-container text-on-primary-container hover:bg-primary disabled:opacity-50"
+          >
+            {running ? 'Running…' : 'Run'}
+          </button>
+        </div>
+        <pre className="bg-surface-container-low p-3 rounded-sm text-data-md font-mono text-on-surface-variant overflow-auto max-h-64 whitespace-pre">
+          {lines.length === 0 ? '(idle)' : lines.join('\n')}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
+  return (
+    <div className="surface-card border border-outline-variant rounded overflow-hidden">
+      <div className="px-4 py-2 border-b border-outline-variant bg-surface-container-highest flex items-center justify-between">
+        <span className="text-label-xs text-on-surface-variant tracking-wider">{title}</span>
+        {action}
       </div>
       {children}
     </div>
@@ -80,7 +244,7 @@ function Table({ headers, children, data, empty }: { headers: string[]; children
       <table className="w-full text-left border-collapse whitespace-nowrap">
         <thead className="border-b border-outline-variant">
           <tr>
-            {headers.map((h) => <th key={h} className="py-2 px-3 text-label-xs text-on-surface-variant tracking-wider">{h}</th>)}
+            {headers.map((h, i) => <th key={i} className="py-2 px-3 text-label-xs text-on-surface-variant tracking-wider">{h}</th>)}
           </tr>
         </thead>
         <tbody className="text-data-md text-on-surface divide-y divide-outline-variant/30">
