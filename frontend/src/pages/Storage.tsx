@@ -36,8 +36,6 @@ export default function Storage() {
   // from local stash for picking the root partition explicitly.
   const diskList = Array.isArray(mounts) ? mounts : [];
   const rootDisk = diskList.find((d: any) => d.mountpoint === '/') ?? diskList[0];
-  const fmtSize = (gb: number) =>
-    gb >= 1024 ? (gb / 1024).toFixed(1) + ' TB' : gb.toFixed(0) + ' GB';
 
   // SMART modal state
   const [smartDevice, setSmartDevice] = useState<string | null>(null);
