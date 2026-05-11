@@ -9,11 +9,12 @@ services:
     restart: unless-stopped
     pid: "host"
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
-      - /run/user/1000/podman/podman.sock:/var/run/docker.sock:rw
+      - /var/run/docker.sock:/var/run/docker.sock:rw
       - /var/log:/host-logs:ro
       - devops-data:/var/lib/devops-manager
+      - /:/host/root:ro,rslave
     environment:
       - PBS_API_URL=${PBS_API_URL:-}
       - PBS_API_TOKEN=${PBS_API_TOKEN:-}

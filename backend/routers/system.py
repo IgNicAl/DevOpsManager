@@ -1,3 +1,4 @@
+import os
 import platform
 import time
 from datetime import datetime
@@ -8,6 +9,16 @@ from fastapi import APIRouter, Query
 from models.envelope import ok, fail
 from utils.metrics_store import metrics_store
 
+HOST_ROOT = "/host/root"
+HOST_PROC_MOUNTS = "/proc/1/mounts"
+
+_SKIP_FS = {
+    "tmpfs", "devtmpfs", "devpts", "sysfs", "proc", "cgroup", "cgroup2",
+    "pstore", "bpf", "tracefs", "debugfs", "securityfs", "hugetlbfs",
+    "mqueue", "fusectl", "overlay", "squashfs", "autofs", "efivarfs",
+    "configfs", "ramfs", "rpc_pipefs", "nsfs",
+}
+
 router = APIRouter(prefix="/api/system", tags=["System"])
 
 
@@ -16,19 +27,23 @@ def system_overview():
     try:
         cpu_percent = psutil.cpu_percent(interval=0.5)
         mem = psutil.virtual_memory()
-        disk = psutil.disk_usage("/")
         boot_time = psutil.boot_time()
         uptime_seconds = time.time() - boot_time
         uname = platform.uname()
+
+        st = os.statvfs(HOST_ROOT)
+        disk_total = st.f_blocks * st.f_frsize
+        disk_free = st.f_bavail * st.f_frsize
+        disk_used = disk_total - disk_free
 
         return ok({
             "cpu_percent": cpu_percent,
             "ram_used_gb": round(mem.used / (1024 ** 3), 2),
             "ram_total_gb": round(mem.total / (1024 ** 3), 2),
             "ram_percent": mem.percent,
-            "disk_used_gb": round(disk.used / (1024 ** 3), 2),
-            "disk_total_gb": round(disk.total / (1024 ** 3), 2),
-            "disk_percent": disk.percent,
+            "disk_used_gb": round(disk_used / (1024 ** 3), 2),
+            "disk_total_gb": round(disk_total / (1024 ** 3), 2),
+            "disk_percent": round(disk_used / disk_total * 100, 1) if disk_total else 0,
             "uptime_seconds": int(uptime_seconds),
             "hostname": uname.node,
             "os_name": f"{uname.system} {uname.release}",
@@ -87,22 +102,43 @@ def memory_details():
 @router.get("/disk")
 def disk_partitions():
     try:
-        partitions = psutil.disk_partitions(all=False)
         disks = []
-        for p in partitions:
-            try:
-                usage = psutil.disk_usage(p.mountpoint)
-                disks.append({
-                    "device": p.device,
-                    "mountpoint": p.mountpoint,
-                    "fstype": p.fstype,
-                    "total_gb": round(usage.total / (1024 ** 3), 2),
-                    "used_gb": round(usage.used / (1024 ** 3), 2),
-                    "free_gb": round(usage.free / (1024 ** 3), 2),
-                    "percent": usage.percent,
-                })
-            except PermissionError:
-                continue
+        seen = set()
+
+        with open(HOST_PROC_MOUNTS) as f:
+            for line in f:
+                parts = line.split()
+                if len(parts) < 3:
+                    continue
+                device, mountpoint, fstype = parts[0], parts[1], parts[2]
+
+                if fstype in _SKIP_FS or not device.startswith("/dev/"):
+                    continue
+                key = (device, mountpoint)
+                if key in seen:
+                    continue
+                seen.add(key)
+
+                host_path = f"{HOST_ROOT}{mountpoint}"
+                try:
+                    st = os.statvfs(host_path)
+                    total = st.f_blocks * st.f_frsize
+                    free = st.f_bavail * st.f_frsize
+                    used = total - free
+                    if total == 0:
+                        continue
+                    disks.append({
+                        "device": device,
+                        "mountpoint": mountpoint,
+                        "fstype": fstype,
+                        "total_gb": round(total / (1024 ** 3), 2),
+                        "used_gb": round(used / (1024 ** 3), 2),
+                        "free_gb": round(free / (1024 ** 3), 2),
+                        "percent": round(used / total * 100, 1),
+                    })
+                except OSError:
+                    continue
+
         return ok(disks)
     except Exception as exc:
         return fail(str(exc))

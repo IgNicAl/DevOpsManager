@@ -32,8 +32,14 @@ export default function Storage() {
   const { data: pools } = usePolling(fetchZfs, 30000);
   const { data: pvcs } = usePolling(fetchPvcs, 30000);
 
-  const mainDisk = Array.isArray(mounts) ? mounts[0] : mounts;
+  // Mount list (from /api/system/disk — partition-level) + helpers preserved
+  // from local stash for picking the root partition explicitly.
+  const diskList = Array.isArray(mounts) ? mounts : [];
+  const rootDisk = diskList.find((d: any) => d.mountpoint === '/') ?? diskList[0];
+  const fmtSize = (gb: number) =>
+    gb >= 1024 ? (gb / 1024).toFixed(1) + ' TB' : gb.toFixed(0) + ' GB';
 
+  // SMART modal state
   const [smartDevice, setSmartDevice] = useState<string | null>(null);
   const [smartData, setSmartData] = useState<any>(null);
   const [smartLoading, setSmartLoading] = useState(false);
@@ -51,7 +57,7 @@ export default function Storage() {
     setSmartLoading(false);
   };
 
-  // du
+  // du tool
   const [duPaths, setDuPaths] = useState('/var/log,/home');
   const [duRows, setDuRows] = useState<Array<{ path: string; size: string | null; ok: boolean; error?: string }> | null>(null);
   const [duLoading, setDuLoading] = useState(false);
@@ -76,12 +82,12 @@ export default function Storage() {
         <p className="text-body-md text-on-surface-variant">Disks, partitions, S.M.A.R.T., ZFS pools, PVCs.</p>
       </div>
 
-      {/* Main disk overview */}
-      {mainDisk && (
+      {/* Root disk summary */}
+      {rootDisk && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <StatCard label="Total" value={(mainDisk.total_gb / 1024).toFixed(1)} unit="TB" icon="hard_drive" />
-          <StatCard label="Used" value={(mainDisk.used_gb / 1024).toFixed(1)} unit="TB" icon="pie_chart" percent={mainDisk.percent} color={mainDisk.percent > 85 ? 'error' : 'primary'} />
-          <StatCard label="Free" value={(mainDisk.free_gb / 1024).toFixed(1)} unit="TB" icon="folder_open" />
+          <StatCard label="Root Total" value={(rootDisk.total_gb / 1024).toFixed(1)} unit="TB" icon="hard_drive" />
+          <StatCard label="Root Used" value={(rootDisk.used_gb / 1024).toFixed(1)} unit="TB" icon="pie_chart" percent={rootDisk.percent} color={rootDisk.percent > 85 ? 'error' : 'primary'} />
+          <StatCard label="Root Free" value={(rootDisk.free_gb / 1024).toFixed(1)} unit="TB" icon="folder_open" />
         </div>
       )}
 
